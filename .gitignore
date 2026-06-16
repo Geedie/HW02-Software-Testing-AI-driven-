@@ -1,0 +1,19 @@
+# Chặn thư mục chứa thư viện Node.js (Nguyên nhân chính gây ra >1700 file)
+node_modules/
+dist/
+build/
+
+# Chặn file database SQLite local (nơi chứa dữ liệu sinh ra khi bạn test)
+*.sqlite
+*.sqlite3
+*.db
+
+# Chặn các file log hệ thống
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Chặn file môi trường ẩn chứa thông tin bảo mật
+.env
+.env.local
