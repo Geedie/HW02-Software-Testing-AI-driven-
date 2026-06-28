@@ -1,0 +1,633 @@
+prompt_log_04
+prompt:
+# FEATURE TO TEST: 4. Trạng thái đơn hàng (FR10 - Order State Machine)
+
+## 1. Extracted Source Code Context
+
+### Endpoint 1: Admin cập nhật trạng thái đơn hàng
+
+* **Endpoint:** `PUT /api/admin/orders/:id/status`
+
+* **Authentication Requirement:** `authenticateToken`
+
+* **Input Structure:**
+
+```json
+{
+  "status": "confirmed"
+}
+```
+
+* **Allowed Status Values Identified in Source Code:**
+
+  * pending
+  * confirmed
+  * shipping
+  * delivered
+  * canceled
+
+* **Backend Validation Logic (server.js):**
+
+  * Lấy trạng thái hiện tại:
+
+    ```sql
+    SELECT status FROM orders WHERE id = ?
+    ```
+
+  * Nếu không tìm thấy đơn hàng:
+
+    ```json
+    {
+      "error": "Order not found"
+    }
+    ```
+
+    Status Code: `404`
+
+  * Các chuyển trạng thái hợp lệ:
+
+| Current Status | Allowed Next Status                                            |
+| -------------- | -------------------------------------------------------------- |
+| pending        | confirmed, canceled                                            |
+| confirmed      | shipping, canceled                                             |
+| shipping       | delivered                                                      |
+| canceled       | delivered *(logic bất thường nhưng tồn tại trong source code)* |
+
+* Nếu transition không hợp lệ:
+
+  ```json
+  {
+    "error": "Invalid state transition from <currentStatus> to <targetStatus>"
+  }
+  ```
+
+  Status Code: `400`
+
+* Nếu hợp lệ:
+
+  ```sql
+  UPDATE orders SET status = ? WHERE id = ?
+  ```
+
+  Response:
+
+  ```json
+  {
+    "message": "Order status updated"
+  }
+  ```
+
+---
+
+### Endpoint 2: User hủy đơn hàng
+
+* **Endpoint:** `PUT /api/orders/:id/cancel`
+
+* **Authentication Requirement:** `authenticateToken`
+
+* **Backend Validation Logic (server.js):**
+
+  * Chỉ được thao tác trên đơn hàng thuộc về user hiện tại:
+
+    ```sql
+    SELECT * FROM orders
+    WHERE id = ?
+    AND user_id = ?
+    ```
+
+  * Nếu không tìm thấy:
+
+    ```json
+    {
+      "error": "Order not found"
+    }
+    ```
+
+    Status Code: `404`
+
+  * Không cho phép hủy nếu:
+
+    ```javascript
+    order.status === "delivered"
+    ||
+    order.status === "canceled"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "error": "Cannot cancel this order."
+    }
+    ```
+
+    Status Code: `400`
+
+  * Nếu được phép:
+
+    ```sql
+    UPDATE orders SET status = 'canceled'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "message": "Order canceled successfully"
+    }
+    ```
+
+* **Code Comment Detected:**
+
+```javascript
+// Lẽ ra phải là:
+// if (order.status !== 'pending' && order.status !== 'confirmed')
+```
+
+Điều này cho thấy có khả năng tồn tại bug nghiệp vụ:
+
+* Hiện tại user vẫn có thể hủy đơn ở trạng thái `shipping`.
+* Theo comment của developer, chỉ nên cho phép hủy khi trạng thái là:
+
+  * pending
+  * confirmed
+
+---
+
+## 2. Input Data Mapping Specification (For AI Agent Skill)
+
+### Numeric Fields
+
+| Field           | Min       | Max       | Notes     |
+| --------------- | --------- | --------- | --------- |
+| id (Path Param) | Undefined | Undefined | Order ID. |
+
+### String Fields & Limits
+
+| Field  | Required | Min Length | Max Length | Notes                                              |
+| ------ | -------- | ---------- | ---------- | -------------------------------------------------- |
+| status | Yes      | Undefined  | Undefined  | Giá trị phải thuộc tập trạng thái được code xử lý. |
+
+### Enum Values
+
+| Field  | Allowed Values                                    |
+| ------ | ------------------------------------------------- |
+| status | pending, confirmed, shipping, delivered, canceled |
+
+### Inter-field Dependencies
+
+#### State Transition Rules
+
+| Current Status | Next Status | Valid                    |
+| -------------- | ----------- | ------------------------ |
+| pending        | confirmed   | Yes                      |
+| pending        | canceled    | Yes                      |
+| pending        | shipping    | No                       |
+| pending        | delivered   | No                       |
+| confirmed      | shipping    | Yes                      |
+| confirmed      | canceled    | Yes                      |
+| confirmed      | pending     | No                       |
+| confirmed      | delivered   | No                       |
+| shipping       | delivered   | Yes                      |
+| shipping       | canceled    | No                       |
+| shipping       | confirmed   | No                       |
+| shipping       | pending     | No                       |
+| delivered      | Any Status  | No                       |
+| canceled       | delivered   | Yes *(theo source code)* |
+| canceled       | pending     | No                       |
+| canceled       | confirmed   | No                       |
+| canceled       | shipping    | No                       |
+
+#### Ownership Rule
+
+| Dependency         | Rule                                            |
+| ------------------ | ----------------------------------------------- |
+| order_id + user_id | User chỉ được hủy đơn hàng thuộc về chính mình. |
+
+#### Cancel Order Rule
+
+| Current Status | Can Cancel                        |
+| -------------- | --------------------------------- |
+| pending        | Yes                               |
+| confirmed      | Yes                               |
+| shipping       | Yes *(theo source code hiện tại)* |
+| delivered      | No                                |
+| canceled       | No                                |
+
+### Error Response Format
+
+#### Order Not Found
+
+Status Code: `404`
+
+```json
+{
+  "error": "Order not found"
+}
+```
+
+#### Invalid State Transition
+
+Status Code: `400`
+
+```json
+{
+  "error": "Invalid state transition from pending to delivered"
+}
+```
+
+#### Cannot Cancel Order
+
+Status Code: `400`
+
+```json
+{
+  "error": "Cannot cancel this order."
+}
+```
+
+#### Update Success
+
+Status Code: `200`
+
+```json
+{
+  "message": "Order status updated"
+}
+```
+
+#### Cancel Success
+
+Status Code: `200`
+
+```json
+{
+  "message": "Order canceled successfully"
+}
+```
+
+### Validation Visibility Analysis
+
+Không tìm thấy trong source code:
+
+* Validation role Admin cho endpoint `/api/admin/orders/:id/status`
+* Validation status null
+* Validation status rỗng (`""`)
+* Validation status viết hoa/thường
+* Validation status không thuộc enum
+* Validation delivered → delivered
+* Validation canceled → canceled
+* Validation concurrent update
+* Validation optimistic locking
+
+### Potential Defects Identified From Source Code
+
+#### DEFECT-01
+
+Trạng thái:
+
+```text
+canceled -> delivered
+```
+
+được cho phép bởi source code:
+
+```javascript
+if (currentStatus === "canceled" && status === "delivered")
+```
+
+Đây là transition bất thường trong Order State Machine.
+
+#### DEFECT-02
+
+User có thể hủy đơn hàng ở trạng thái:
+
+```text
+shipping
+```
+
+vì source code chỉ chặn:
+
+```javascript
+delivered
+canceled
+```
+
+trong khi comment của developer cho thấy nghiệp vụ mong muốn là chỉ cho phép hủy ở:
+
+```text
+pending
+confirmed
+```
+AI-output:
+## 1. Feature Variables & Domain Decomposition
+
+**Two endpoints in scope:**
+- **EP1:** `PUT /api/admin/orders/:id/status` — Admin updates order status
+- **EP2:** `PUT /api/orders/:id/cancel` — User cancels own order
+
+| Variable | Type | Format | Constraints | Dependencies |
+|----------|------|--------|-------------|--------------|
+| `Authorization` header | STRING | `Bearer <JWT>` | Required. Valid, non-expired token. | Gates both endpoints; absent = 401 |
+| `:id` (path param) | INTEGER | Positive integer | Must reference an existing order. Min: 1. Max: **Unknown** | EP1: any order; EP2: order must belong to `req.user.id` |
+| `status` (EP1 body) | STRING | Enum | Required. Must be one of: `pending`, `confirmed`, `shipping`, `delivered`, `canceled`. Transition validity depends on current DB state. | Depends on current order status in DB — state machine cross-variable dependency |
+| `currentStatus` (DB state) | STRING | Enum | Read-only server state. One of 5 values. Drives transition validity. | Coupled with `status` input; forms the 2D transition matrix |
+| `user_id` (EP2 ownership) | INTEGER | System-extracted from JWT | Order's `user_id` must match `req.user.id`. | Ownership check: `WHERE id = ? AND user_id = ?` |
+
+**System-managed (not in scope as inputs):** `created_at`, `total_amount`, `shipping_address`
+
+> **Assumption A1:** EP1 (`/api/admin/...`) requires admin role — but no explicit role check was found in source. Tests will probe regular user tokens against this endpoint.
+
+> **Assumption A2:** `:id` is a positive integer auto-generated by SQLite AUTOINCREMENT. Minimum valid = 1. Tests use IDs seeded from prior test setup.
+
+> **Assumption A3:** All 5 state values (`pending`, `confirmed`, `shipping`, `delivered`, `canceled`) are case-sensitive string comparisons in the server logic. `"Pending"`, `"CONFIRMED"` etc. are treated as unknown values.
+
+> **Assumption A4:** DEFECT-01 (`canceled → delivered`) is treated as **current behavior** (tests document what the code does, not what it should do). Separate enhancement tests target the fix.
+
+> **Assumption A5:** DEFECT-02 (user can cancel `shipping` orders) is treated as **current behavior**. Tests both confirm the bug exists and propose what the fixed behavior should be.
+
+> **Assumption A6:** There is no optimistic locking or version field. Concurrent state transitions on the same order ID race without conflict detection.
+
+---
+
+## 2. BVA Derivation & Rationale (Step-by-Step)
+
+### Variable: `:id` (Path Parameter, Numeric BVA)
+```
+Type: INTEGER (SQLite AUTOINCREMENT)
+Logical min = 1 (IDs start at 1)
+
+Min-1 = 0        → INVALID (no order with id=0 exists by AUTOINCREMENT)
+Min   = 1        → VALID if order #1 exists in DB
+Min+1 = 2        → VALID if order #2 exists
+
+Nominal = <seeded order ID from test setup>
+
+Max = Undefined (SQLite INT max = 2,147,483,647)
+  Max-1 = 2,147,483,646 → INVALID (no such order)
+  Max   = 2,147,483,647 → INVALID (no such order)
+  Max+1 = 2,147,483,648 → INVALID + potential overflow
+
+Special:
+  Non-existent valid integer (e.g., 99999) → 404 "Order not found"
+  Negative: -1         → INVALID (no such order → 404 or 400)
+  String: "abc"        → INVALID (type mismatch → 400 or 500)
+  Float: "1.5"         → INVALID (type mismatch)
+  SQL injection: "1 OR 1=1" → parameterized → should fail gracefully
+  Path traversal: "../1"    → should be rejected by router
+```
+
+### Variable: `status` (EP1 Body, Enum + State Machine BVA)
+```
+Type: STRING ENUM
+Valid set: {pending, confirmed, shipping, delivered, canceled}
+Constraint: must also satisfy transition rule from currentStatus
+
+Equivalence partitions:
+  Valid enum + valid transition    → 200
+  Valid enum + invalid transition  → 400 "Invalid state transition..."
+  Invalid enum value               → behavior Unknown (no explicit enum check found)
+  Empty string ""                  → behavior Unknown
+  null / missing                   → behavior Unknown
+  Case variant "Confirmed"         → behavior Unknown (likely invalid transition or ignored)
+  Extra whitespace " confirmed "   → behavior Unknown
+
+State Machine 2D Transition Matrix (currentStatus × targetStatus):
+  [pending]   → confirmed: VALID ✓
+  [pending]   → canceled:  VALID ✓
+  [pending]   → shipping:  INVALID ✗
+  [pending]   → delivered: INVALID ✗
+  [pending]   → pending:   INVALID ✗ (self-transition — not in allowed map)
+
+  [confirmed] → shipping:  VALID ✓
+  [confirmed] → canceled:  VALID ✓
+  [confirmed] → pending:   INVALID ✗
+  [confirmed] → delivered: INVALID ✗
+  [confirmed] → confirmed: INVALID ✗ (self-transition)
+
+  [shipping]  → delivered: VALID ✓
+  [shipping]  → canceled:  INVALID ✗
+  [shipping]  → confirmed: INVALID ✗
+  [shipping]  → pending:   INVALID ✗
+  [shipping]  → shipping:  INVALID ✗ (self-transition)
+
+  [delivered] → ANY:       INVALID ✗ (terminal state — no outgoing transitions)
+  [delivered] → delivered: INVALID ✗ (self-transition)
+
+  [canceled]  → delivered: VALID ✓ ← DEFECT-01 (anomalous but coded)
+  [canceled]  → pending:   INVALID ✗
+  [canceled]  → confirmed: INVALID ✗
+  [canceled]  → shipping:  INVALID ✗
+  [canceled]  → canceled:  INVALID ✗ (self-transition)
+```
+
+> **Assumption A7:** Self-transitions (e.g., `pending → pending`) are NOT in the allowed transitions map. The server likely returns `"Invalid state transition from pending to pending"`. Tests will confirm.
+
+> **Assumption A8:** Status values not in the enum set (e.g., `"refunded"`, `"processing"`) are not explicitly handled — the server may return `"Invalid state transition from X to refunded"` or crash. Tests document actual behavior.
+
+### Variable: EP2 Cancel — `order.status` at time of cancel request
+```
+Type: STRING ENUM (read from DB at request time)
+Cancel validation: blocks if status === "delivered" OR status === "canceled"
+
+Current Code Behavior:
+  pending   → CANCEL ALLOWED ✓
+  confirmed → CANCEL ALLOWED ✓
+  shipping  → CANCEL ALLOWED ✓ ← DEFECT-02 (should be blocked per dev comment)
+  delivered → CANCEL BLOCKED ✗ → 400 "Cannot cancel this order."
+  canceled  → CANCEL BLOCKED ✗ → 400 "Cannot cancel this order."
+
+Business-correct behavior (per developer comment):
+  pending   → CANCEL ALLOWED ✓
+  confirmed → CANCEL ALLOWED ✓
+  shipping  → CANCEL BLOCKED ✗ ← should block
+  delivered → CANCEL BLOCKED ✗
+  canceled  → CANCEL BLOCKED ✗
+```
+
+### Variable: EP2 Ownership — `order.user_id` vs `req.user.id`
+```
+Type: INTEGER comparison
+Rule: WHERE id = :id AND user_id = req.user.id
+
+Cases:
+  order belongs to requesting user      → VALID → proceed to cancel
+  order belongs to different user       → 404 "Order not found" (query returns no rows)
+  order ID doesn't exist at all         → 404 "Order not found"
+  admin trying to use cancel endpoint   → depends on admin's user_id vs order owner
+```
+
+---
+
+## 3. Comprehensive Test Case Matrix
+
+### 3A — EP1: Admin Update Status — Path Param `:id` Tests
+
+| Test ID | Title | Preconditions | Inputs (exact values) | Steps | Expected Result | HTTP Status |
+|---------|-------|---------------|----------------------|-------|-----------------|-------------|
+| TC-OSM-001 | `:id` = valid existing order | Order #1 exists, status=`pending`; valid admin JWT | Path: `/api/admin/orders/1/status` Body: `{"status": "confirmed"}` | PUT request | `{"message": "Order status updated"}` | 200 |
+| TC-OSM-002 | `:id` = 0 (Min-1) | Valid admin JWT | Path: `/api/admin/orders/0/status` Body: `{"status": "confirmed"}` | PUT request | `{"error": "Order not found"}` | 404 |
+| TC-OSM-003 | `:id` = non-existent integer (99999) | No order #99999 in DB; valid admin JWT | Path: `/api/admin/orders/99999/status` Body: `{"status": "confirmed"}` | PUT request | `{"error": "Order not found"}` | 404 |
+| TC-OSM-004 | `:id` = negative (-1) | Valid admin JWT | Path: `/api/admin/orders/-1/status` Body: `{"status": "confirmed"}` | PUT request | `{"error": "Order not found"}` or 400 | 404 / 400 |
+| TC-OSM-005 | `:id` = string `"abc"` | Valid admin JWT | Path: `/api/admin/orders/abc/status` Body: `{"status": "confirmed"}` | PUT request | 400 or 404 (type mismatch in SQL) | 400 / 404 |
+| TC-OSM-006 | `:id` = float `"1.5"` | Valid admin JWT | Path: `/api/admin/orders/1.5/status` Body: `{"status": "confirmed"}` | PUT request | 400 or 404 | 400 / 404 |
+| TC-OSM-007 | `:id` = SQL injection | Valid admin JWT | Path: `/api/admin/orders/1 OR 1=1/status` Body: `{"status": "confirmed"}` | PUT request | Router rejects or parameterized query blocks | 400 / 404 |
+| TC-OSM-008 | No `Authorization` header | Valid order exists | Path: valid; No auth header | PUT request | 401 Unauthorized | 401 |
+| TC-OSM-009 | Regular user token on admin endpoint | Valid user JWT (test@eshop.com); order exists | Path: valid; Body: `{"status": "confirmed"}` | PUT with user token | **Unknown** — 403 Forbidden (if role check) or 200 (if no role check) — **DEFECT gap** | 403 / 200 |
+
+### 3B — EP1: Admin Update Status — Full State Machine Matrix
+
+| Test ID | Title | Preconditions | Inputs (exact values) | Steps | Expected Result | HTTP Status |
+|---------|-------|---------------|----------------------|-------|-----------------|-------------|
+| TC-OSM-010 | `pending → confirmed` (VALID) | Order exists, current status=`pending`; admin JWT | Path: `/api/admin/orders/:id/status` Body: `{"status": "confirmed"}` | PUT request | `{"message": "Order status updated"}` — DB status=`confirmed` | 200 |
+| TC-OSM-011 | `pending → canceled` (VALID) | Order exists, current status=`pending`; admin JWT | Body: `{"status": "canceled"}` | PUT request | `{"message": "Order status updated"}` — DB status=`canceled` | 200 |
+| TC-OSM-012 | `pending → shipping` (INVALID) | Order exists, current status=`pending`; admin JWT | Body: `{"status": "shipping"}` | PUT request | `{"error": "Invalid state transition from pending to shipping"}` | 400 |
+| TC-OSM-013 | `pending → delivered` (INVALID) | Order exists, current status=`pending`; admin JWT | Body: `{"status": "delivered"}` | PUT request | `{"error": "Invalid state transition from pending to delivered"}` | 400 |
+| TC-OSM-014 | `pending → pending` (self-transition, INVALID) | Order exists, current status=`pending`; admin JWT | Body: `{"status": "pending"}` | PUT request | `{"error": "Invalid state transition from pending to pending"}` | 400 |
+| TC-OSM-015 | `confirmed → shipping` (VALID) | Order exists, current status=`confirmed`; admin JWT | Body: `{"status": "shipping"}` | PUT request | `{"message": "Order status updated"}` | 200 |
+| TC-OSM-016 | `confirmed → canceled` (VALID) | Order exists, current status=`confirmed`; admin JWT | Body: `{"status": "canceled"}` | PUT request | `{"message": "Order status updated"}` | 200 |
+| TC-OSM-017 | `confirmed → pending` (INVALID) | Order exists, current status=`confirmed`; admin JWT | Body: `{"status": "pending"}` | PUT request | `{"error": "Invalid state transition from confirmed to pending"}` | 400 |
+| TC-OSM-018 | `confirmed → delivered` (INVALID) | Order exists, current status=`confirmed`; admin JWT | Body: `{"status": "delivered"}` | PUT request | `{"error": "Invalid state transition from confirmed to delivered"}` | 400 |
+| TC-OSM-019 | `confirmed → confirmed` (self-transition, INVALID) | Order exists, current status=`confirmed`; admin JWT | Body: `{"status": "confirmed"}` | PUT request | `{"error": "Invalid state transition from confirmed to confirmed"}` | 400 |
+| TC-OSM-020 | `shipping → delivered` (VALID) | Order exists, current status=`shipping`; admin JWT | Body: `{"status": "delivered"}` | PUT request | `{"message": "Order status updated"}` | 200 |
+| TC-OSM-021 | `shipping → canceled` (INVALID) | Order exists, current status=`shipping`; admin JWT | Body: `{"status": "canceled"}` | PUT request | `{"error": "Invalid state transition from shipping to canceled"}` | 400 |
+| TC-OSM-022 | `shipping → confirmed` (INVALID) | Order exists, current status=`shipping`; admin JWT | Body: `{"status": "confirmed"}` | PUT request | `{"error": "Invalid state transition from shipping to confirmed"}` | 400 |
+| TC-OSM-023 | `shipping → pending` (INVALID) | Order exists, current status=`shipping`; admin JWT | Body: `{"status": "pending"}` | PUT request | `{"error": "Invalid state transition from shipping to pending"}` | 400 |
+| TC-OSM-024 | `shipping → shipping` (self-transition, INVALID) | Order exists, current status=`shipping`; admin JWT | Body: `{"status": "shipping"}` | PUT request | `{"error": "Invalid state transition from shipping to shipping"}` | 400 |
+| TC-OSM-025 | `delivered → confirmed` (INVALID — terminal) | Order exists, current status=`delivered`; admin JWT | Body: `{"status": "confirmed"}` | PUT request | `{"error": "Invalid state transition from delivered to confirmed"}` | 400 |
+| TC-OSM-026 | `delivered → pending` (INVALID — terminal) | Order exists, current status=`delivered`; admin JWT | Body: `{"status": "pending"}` | PUT request | `{"error": "Invalid state transition from delivered to pending"}` | 400 |
+| TC-OSM-027 | `delivered → shipping` (INVALID — terminal) | Order exists, current status=`delivered`; admin JWT | Body: `{"status": "shipping"}` | PUT request | `{"error": "Invalid state transition from delivered to shipping"}` | 400 |
+| TC-OSM-028 | `delivered → canceled` (INVALID — terminal) | Order exists, current status=`delivered`; admin JWT | Body: `{"status": "canceled"}` | PUT request | `{"error": "Invalid state transition from delivered to canceled"}` | 400 |
+| TC-OSM-029 | `delivered → delivered` (self-transition, INVALID) | Order exists, current status=`delivered`; admin JWT | Body: `{"status": "delivered"}` | PUT request | `{"error": "Invalid state transition from delivered to delivered"}` | 400 |
+| TC-OSM-030 | `canceled → delivered` (**DEFECT-01** — anomalous VALID) | Order exists, current status=`canceled`; admin JWT | Body: `{"status": "delivered"}` | PUT request | **BUG**: `{"message": "Order status updated"}` — transition succeeds per current code | 200 |
+| TC-OSM-031 | `canceled → pending` (INVALID) | Order exists, current status=`canceled`; admin JWT | Body: `{"status": "pending"}` | PUT request | `{"error": "Invalid state transition from canceled to pending"}` | 400 |
+| TC-OSM-032 | `canceled → confirmed` (INVALID) | Order exists, current status=`canceled`; admin JWT | Body: `{"status": "confirmed"}` | PUT request | `{"error": "Invalid state transition from canceled to confirmed"}` | 400 |
+| TC-OSM-033 | `canceled → shipping` (INVALID) | Order exists, current status=`canceled`; admin JWT | Body: `{"status": "shipping"}` | PUT request | `{"error": "Invalid state transition from canceled to shipping"}` | 400 |
+| TC-OSM-034 | `canceled → canceled` (self-transition, INVALID) | Order exists, current status=`canceled`; admin JWT | Body: `{"status": "canceled"}` | PUT request | `{"error": "Invalid state transition from canceled to canceled"}` | 400 |
+
+### 3C — EP1: Admin Update Status — `status` Field Validation Tests
+
+| Test ID | Title | Preconditions | Inputs (exact values) | Steps | Expected Result | HTTP Status |
+|---------|-------|---------------|----------------------|-------|-----------------|-------------|
+| TC-OSM-035 | `status` = `null` | Order exists, status=`pending`; admin JWT | Body: `{"status": null}` | PUT request | **Unknown** — 400 (invalid) or crash | 400 / 500 |
+| TC-OSM-036 | `status` missing from body | Order exists, status=`pending`; admin JWT | Body: `{}` | PUT request | **Unknown** — 400 (required) or crash | 400 / 500 |
+| TC-OSM-037 | `status` = `""` (empty string) | Order exists, status=`pending`; admin JWT | Body: `{"status": ""}` | PUT request | **Unknown** — 400 invalid enum or transition error | 400 |
+| TC-OSM-038 | `status` = `"Confirmed"` (wrong case — capital C) | Order exists, status=`pending`; admin JWT | Body: `{"status": "Confirmed"}` | PUT request | **Unknown** — 400 invalid transition (case-sensitive mismatch) | 400 |
+| TC-OSM-039 | `status` = `"CONFIRMED"` (all caps) | Order exists, status=`pending`; admin JWT | Body: `{"status": "CONFIRMED"}` | PUT request | **Unknown** — 400 invalid transition | 400 |
+| TC-OSM-040 | `status` = `"refunded"` (out of enum) | Order exists, status=`pending`; admin JWT | Body: `{"status": "refunded"}` | PUT request | **Unknown** — 400 or stored as invalid enum value | 400 |
+| TC-OSM-041 | `status` = `"processing"` (out of enum) | Order exists, status=`pending`; admin JWT | Body: `{"status": "processing"}` | PUT request | **Unknown** — 400 or stored as invalid | 400 |
+| TC-OSM-042 | `status` = `" confirmed"` (leading space) | Order exists, status=`pending`; admin JWT | Body: `{"status": " confirmed"}` | PUT request | **Unknown** — 400 (no trim validation found) | 400 |
+| TC-OSM-043 | `status` = integer `1` (wrong type) | Order exists, status=`pending`; admin JWT | Body: `{"status": 1}` | PUT request | **Unknown** — 400 type mismatch | 400 / 500 |
+| TC-OSM-044 | Empty request body | Order exists; admin JWT | Body: `` (no body) | PUT request | **Unknown** — 400 | 400 / 500 |
+
+### 3D — EP2: User Cancel Order — Ownership & Auth Tests
+
+| Test ID | Title | Preconditions | Inputs (exact values) | Steps | Expected Result | HTTP Status |
+|---------|-------|---------------|----------------------|-------|-----------------|-------------|
+| TC-OSM-045 | Happy path — cancel own pending order | User A logged in; order #X belongs to User A, status=`pending` | Path: `/api/orders/X/cancel` Header: User A's JWT | PUT request | `{"message": "Order canceled successfully"}` — DB status=`canceled` | 200 |
+| TC-OSM-046 | Cancel own confirmed order | User A logged in; order #X belongs to User A, status=`confirmed` | Path: `/api/orders/X/cancel` | PUT request | `{"message": "Order canceled successfully"}` | 200 |
+| TC-OSM-047 | Cancel another user's order (BOLA/IDOR) | User A and User B exist; order #Y belongs to User B, status=`pending` | Path: `/api/orders/Y/cancel` Header: **User A's** JWT | PUT request | `{"error": "Order not found"}` — User A cannot access User B's order | 404 |
+| TC-OSM-048 | Cancel non-existent order | User A logged in; order #99999 does not exist | Path: `/api/orders/99999/cancel` | PUT request | `{"error": "Order not found"}` | 404 |
+| TC-OSM-049 | No `Authorization` header on cancel | Order exists | Path: valid; No auth header | PUT request | 401 Unauthorized | 401 |
+| TC-OSM-050 | `:id` = 0 on cancel endpoint | User A logged in | Path: `/api/orders/0/cancel` | PUT request | `{"error": "Order not found"}` | 404 |
+| TC-OSM-051 | `:id` = negative on cancel endpoint | User A logged in | Path: `/api/orders/-1/cancel` | PUT request | `{"error": "Order not found"}` or 400 | 404 / 400 |
+| TC-OSM-052 | `:id` = string `"abc"` on cancel endpoint | User A logged in | Path: `/api/orders/abc/cancel` | PUT request | 400 or 404 | 400 / 404 |
+
+### 3E — EP2: User Cancel Order — Status State Tests (Current Code Behavior)
+
+| Test ID | Title | Preconditions | Inputs (exact values) | Steps | Expected Result | HTTP Status |
+|---------|-------|---------------|----------------------|-------|-----------------|-------------|
+| TC-OSM-053 | Cancel `pending` order (ALLOWED) | User A owns order, status=`pending` | Path: `/api/orders/:id/cancel`; User A JWT | PUT request | `{"message": "Order canceled successfully"}` | 200 |
+| TC-OSM-054 | Cancel `confirmed` order (ALLOWED) | User A owns order, status=`confirmed` | Path: cancel; User A JWT | PUT request | `{"message": "Order canceled successfully"}` | 200 |
+| TC-OSM-055 | Cancel `shipping` order (**DEFECT-02** — currently ALLOWED, should be BLOCKED) | User A owns order, status=`shipping` | Path: cancel; User A JWT | PUT request | **BUG**: `{"message": "Order canceled successfully"}` — cancel succeeds per current code | 200 |
+| TC-OSM-056 | Cancel `delivered` order (BLOCKED) | User A owns order, status=`delivered` | Path: cancel; User A JWT | PUT request | `{"error": "Cannot cancel this order."}` | 400 |
+| TC-OSM-057 | Cancel already `canceled` order (BLOCKED) | User A owns order, status=`canceled` | Path: cancel; User A JWT | PUT request | `{"error": "Cannot cancel this order."}` | 400 |
+
+### 3F — Concurrent & End-to-End Flow Tests
+
+| Test ID | Title | Preconditions | Inputs (exact values) | Steps | Expected Result | HTTP Status |
+|---------|-------|---------------|----------------------|-------|-----------------|-------------|
+| TC-OSM-058 | Concurrent admin status update on same order | Order exists, status=`pending` | Two simultaneous PUTs: one `→ confirmed`, one `→ canceled` | Fire both at same time | One succeeds (200), one gets 400 invalid transition or 200 (race — no locking) | 200 + 400 / 200 + 200 |
+| TC-OSM-059 | Admin updates status while user cancels concurrently | Order status=`pending`; admin changes to `shipping`, user cancels simultaneously | Admin: `→ shipping`; User: cancel | Fire both at same time | One succeeds, other fails — no locking means both may succeed (race condition) | Race condition — both 200 possible |
+| TC-OSM-060 | Full happy-path lifecycle: pending → confirmed → shipping → delivered | Clean order in DB; admin JWT | Step 1: `→ confirmed`; Step 2: `→ shipping`; Step 3: `→ delivered` | Sequential PUTs | Each returns 200, final DB status=`delivered` | 200 each |
+| TC-OSM-061 | Full lifecycle then attempt re-update after terminal | Order traversed to `delivered` | PUT `→ confirmed` after delivered | PUT request | `{"error": "Invalid state transition from delivered to confirmed"}` | 400 |
+| TC-OSM-062 | User cancels `pending` then admin tries to update | Order canceled by user | Admin PUT: `→ confirmed` | PUT request | `{"error": "Invalid state transition from canceled to confirmed"}` | 400 |
+| TC-OSM-063 | Admin cancels then attempts `canceled → delivered` (DEFECT-01 path) | Admin cancels order first; then sends `→ delivered` | Step 1: `→ canceled`; Step 2: `→ delivered` | Two sequential PUTs | Step 2 succeeds (BUG: canceled → delivered allowed) | 200 |
+
+---
+
+## 4. AI Gap Analysis & Vulnerability Report
+
+### 4.1 Specification Gaps
+
+| Gap ID | Description | Affected Variables | Risk Level | Recommendation |
+|--------|-------------|-------------------|------------|----------------|
+| GAP-001 | **DEFECT-01: `canceled → delivered` transition is allowed** — logically invalid; a canceled order cannot be delivered. This is a confirmed code bug. | `status` state machine | **CRITICAL** | Remove `canceled → delivered` from the allowed transitions map. Add test TC-OSM-030 to regression suite to detect if bug reintroduced. |
+| GAP-002 | **DEFECT-02: User can cancel `shipping` orders** — developer comment explicitly flags this as unintended. Orders in transit should not be cancellable. | EP2 cancel logic | **CRITICAL** | Change cancel guard to: `if (order.status !== 'pending' && order.status !== 'confirmed') return 400` per developer comment. |
+| GAP-003 | **No admin role check on `/api/admin/orders/:id/status`** — any authenticated user with a valid JWT may update any order's status. | `Authorization` / role | **CRITICAL** | Add: `if (req.user.role !== 'admin') return res.status(403).json({error: "Forbidden"})` before state machine logic. |
+| GAP-004 | **`status` field not validated as required** — null/missing `status` may cause `undefined` to be passed into transition logic, leading to silent `"Invalid state transition from X to undefined"` or crash. | `status` body field | **HIGH** | Add: `if (!status) return res.status(400).json({error: "status is required"})` |
+| GAP-005 | **No enum validation on `status` input** — values outside `{pending, confirmed, shipping, delivered, canceled}` (e.g., `"refunded"`, `"processing"`) are not explicitly rejected before transition logic. | `status` | **HIGH** | Add allowlist check: `const VALID_STATUSES = [...]; if (!VALID_STATUSES.includes(status)) return 400` |
+| GAP-006 | **No case-insensitive handling or normalization** — `"Confirmed"`, `"SHIPPING"` silently fail without clear error message. Users/integrators may send mixed-case values. | `status` | **MEDIUM** | Normalize input: `status = status.toLowerCase()` before validation, OR document case-sensitivity explicitly and return clear enum error. |
+| GAP-007 | **No whitespace trim on `status`** — `" confirmed"` or `"confirmed "` will fail transition logic silently. | `status` | **MEDIUM** | Add: `status = status.trim()` before processing. |
+| GAP-008 | **No optimistic locking / version field** — concurrent status updates on same order have no conflict detection; last-write wins, creating race conditions in high-traffic scenarios. | `currentStatus` → `status` | **HIGH** | Add `version` INTEGER column to `orders`; require `version` in request body; reject if DB version ≠ request version (`409 Conflict`). |
+| GAP-009 | **EP2 cancel: ownership validated by query filter only** — if SQLite `WHERE id=? AND user_id=?` returns 0 rows, it returns `"Order not found"` for both "wrong owner" and "doesn't exist" cases, hiding the true reason. | `user_id` ownership | **LOW** | Acceptable for security (don't reveal existence of other users' orders). Document explicitly. |
+| GAP-010 | **`delivered` self-transition (`delivered → delivered`) behavior not explicitly handled** — server may return generic transition error or may silently succeed if transition map has a gap. | `status` state machine | **MEDIUM** | Add test TC-OSM-029 to confirm rejection; add explicit terminal state guard: `if (currentStatus === 'delivered') return 400` |
+| GAP-011 | **No audit log / history for status transitions** — once an order's status changes, the prior state is lost. Forensic reconstruction of defective transitions (e.g., DEFECT-01) is impossible. | `status` | **MEDIUM** | Add `order_status_history` table: `(order_id, old_status, new_status, changed_by, changed_at)`. |
+| GAP-012 | **`:id` path param type not validated** — string IDs like `"abc"` are passed directly to `SELECT status FROM orders WHERE id = ?`. SQLite may coerce or return no rows; error handling is implicit. | `:id` | **LOW** | Add: `if (isNaN(parseInt(id, 10))) return res.status(400).json({error: "Invalid order id"})` |
+
+---
+
+### 4.2 Security Vulnerability Test Cases
+
+| Vuln ID | Category | Test Input | Attack Vector | Expected Safe Response |
+|---------|----------|-----------|---------------|----------------------|
+| SEC-001 | SQL Injection (path) | Path: `/api/admin/orders/1 OR 1=1/status` | `:id` passed into `SELECT status FROM orders WHERE id = ?` | Parameterized query blocks; 404 or 400 — no data leak |
+| SEC-002 | SQL Injection (path) | Path: `/api/admin/orders/1; DROP TABLE orders;--/status` | `:id` path param injection | Parameterized query or router blocks; orders table not dropped |
+| SEC-003 | SQL Injection (body) | Body: `{"status": "confirmed'; DROP TABLE orders;--"}` | `status` in UPDATE query | Parameterized query blocks; stored or rejected as invalid enum |
+| SEC-004 | BOLA / IDOR (EP1) | Valid admin JWT + `:id` of another admin's order | Admin endpoint — all orders accessible (no ownership check by design); document scope | Expected: admin can update any order; test verifies this is intentional |
+| SEC-005 | BOLA / IDOR (EP2) | User A JWT + order ID belonging to User B | `/api/orders/:id/cancel` with cross-user ID | `{"error": "Order not found"}` — ownership WHERE clause prevents access |
+| SEC-006 | Privilege Escalation | Regular user JWT on `/api/admin/orders/:id/status` | Non-admin accessing admin endpoint | **DEFECT (GAP-003)**: currently likely 200 if no role check exists — must return 403 after fix |
+| SEC-007 | Mass Assignment (EP1) | Body: `{"status": "confirmed", "user_id": 1, "total_amount": 0}` | Extra fields in UPDATE body | Only `status` column updated; other fields ignored by explicit INSERT/UPDATE query |
+| SEC-008 | Mass Assignment (EP2) | No body on cancel — but test with `{"status": "pending"}` in body | Attempting to set status via cancel body | Body ignored; only `SET status = 'canceled'` executed |
+| SEC-009 | Auth Bypass (EP1) | No `Authorization` header | Accessing admin status update without token | 401 Unauthorized |
+| SEC-010 | Auth Bypass (EP2) | No `Authorization` header | Accessing user cancel without token | 401 Unauthorized |
+| SEC-011 | Race Condition / TOCTOU | Two simultaneous PUTs: `pending → confirmed` and `pending → canceled` | Time-of-check vs time-of-update on same order | Without locking: both may succeed creating inconsistent state; with locking: one gets 409 |
+| SEC-012 | Path Traversal | Path: `/api/admin/orders/../users/1/status` | Directory traversal in URL path | Router rejects — Express normalizes path; no file system access |
+
+---
+
+### 4.3 Enhancement Test Cases (Gap Closure — Post-Fix Verification)
+
+| TC ID | Gap/Defect | Title | Exact Input | Expected Result After Fix |
+|-------|-----------|-------|-------------|--------------------------|
+| TC-OSM-ENH-001 | DEFECT-01 / GAP-001 | `canceled → delivered` blocked after fix | Order status=`canceled`; admin PUT `→ delivered` | 400 `{"error": "Invalid state transition from canceled to delivered"}` |
+| TC-OSM-ENH-002 | DEFECT-02 / GAP-002 | Cancel `shipping` order blocked after fix | User owns order, status=`shipping`; PUT cancel | 400 `{"error": "Cannot cancel this order."}` |
+| TC-OSM-ENH-003 | GAP-003 | Regular user blocked from admin status endpoint | Regular user JWT; PUT admin status update | 403 `{"error": "Forbidden"}` |
+| TC-OSM-ENH-004 | GAP-004 | Null `status` rejected explicitly | Body: `{"status": null}` | 400 `{"error": "status is required"}` |
+| TC-OSM-ENH-005 | GAP-005 | Unknown enum `status` rejected | Body: `{"status": "refunded"}` | 400 `{"error": "Invalid status value"}` |
+| TC-OSM-ENH-006 | GAP-006 | Mixed-case `status` normalized | Body: `{"status": "Confirmed"}` | 200 (normalized to `confirmed`) OR 400 with clear message |
+| TC-OSM-ENH-007 | GAP-007 | Whitespace-padded `status` normalized | Body: `{"status": " confirmed "}` | 200 (trimmed) OR 400 with clear message |
+| TC-OSM-ENH-008 | GAP-008 | Concurrent update returns 409 Conflict | Two simultaneous PUTs on same order | One returns 200, other returns 409 `{"error": "Order version conflict"}` |
+| TC-OSM-ENH-009 | GAP-010 | `delivered → delivered` self-transition blocked | Order status=`delivered`; PUT `→ delivered` | 400 `{"error": "Invalid state transition from delivered to delivered"}` |
+| TC-OSM-ENH-010 | GAP-012 | Non-integer `:id` returns 400 | Path: `/api/admin/orders/abc/status` | 400 `{"error": "Invalid order id"}` |
+
+---
+
+**Summary:**
+
+| Category | Count |
+|----------|-------|
+| EP1 Path param tests | 9 |
+| EP1 State machine matrix (all 25 transitions) | 25 |
+| EP1 `status` field validation | 10 |
+| EP2 Ownership & auth | 8 |
+| EP2 Status-based cancel | 5 |
+| Concurrent & E2E flow | 6 |
+| Security test cases | 12 |
+| Enhancement test cases (post-fix) | 10 |
+| **Total** | **85** |
+
+**Confirmed Defects requiring immediate fix:**
+- **DEFECT-01** (GAP-001): `canceled → delivered` transition must be removed from state machine
+- **DEFECT-02** (GAP-002): User cancel must block `shipping` status per developer intent
+- **GAP-003**: Admin role check missing on `/api/admin/` endpoint — CRITICAL privilege escalation risk

