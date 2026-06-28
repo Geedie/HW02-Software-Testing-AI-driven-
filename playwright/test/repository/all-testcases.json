@@ -1,0 +1,2137 @@
+[
+  {
+    "id": "TC-REG-001",
+    "title": "TC-REG-001: Happy path — valid full registration",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "John Doe",
+      "email": "newuser@test.com",
+      "password": "Password123!",
+      "phone": "0901234567",
+      "shipping_address": "123 Main St"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-001.md"
+  },
+  {
+    "id": "TC-REG-002",
+    "title": "TC-REG-002: Happy path — minimal required fields only",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "Jane",
+      "email": "minimal@test.com",
+      "password": "pass"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-002.md"
+  },
+  {
+    "id": "TC-REG-003",
+    "title": "TC-REG-003: Role defaults to 'user' when omitted",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "RoleTest",
+      "email": "roletest@test.com",
+      "password": "pass123",
+      "role": "Omitted"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-003.md"
+  },
+  {
+    "id": "TC-REG-004",
+    "title": "TC-REG-004: Duplicate email — seeded admin",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "Test",
+      "email": "admin@eshop.com",
+      "password": "pass123"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-004.md"
+  },
+  {
+    "id": "TC-REG-005",
+    "title": "TC-REG-005: Duplicate email — seeded user",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "Test",
+      "email": "test@eshop.com",
+      "password": "pass123"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-005.md"
+  },
+  {
+    "id": "TC-REG-006",
+    "title": "TC-REG-006: Duplicate email — self-registered",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "Dup",
+      "email": "dup@test.com",
+      "password": "pass123"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-006.md"
+  },
+  {
+    "id": "TC-REG-007",
+    "title": "TC-REG-007: Missing email field",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "NoEmail",
+      "password": "pass123"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-007.md"
+  },
+  {
+    "id": "TC-REG-008",
+    "title": "TC-REG-008: Missing password field",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "NoPass",
+      "email": "nopass@test.com"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-008.md"
+  },
+  {
+    "id": "TC-REG-009",
+    "title": "TC-REG-009: Empty string email",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "\"\"",
+      "password": "pass123"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-009.md"
+  },
+  {
+    "id": "TC-REG-010",
+    "title": "TC-REG-010: Empty string password",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "emptypass@test.com",
+      "password": "\"\""
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-010.md"
+  },
+  {
+    "id": "TC-REG-011",
+    "title": "TC-REG-011: Email = null",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "null",
+      "password": "pass123"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-011.md"
+  },
+  {
+    "id": "TC-REG-012",
+    "title": "TC-REG-012: Password = null",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "nullpass@test.com",
+      "password": "null"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-012.md"
+  },
+  {
+    "id": "TC-REG-013",
+    "title": "TC-REG-013: Email without @ symbol",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "invalidemail.com",
+      "password": "pass123"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-013.md"
+  },
+  {
+    "id": "TC-REG-014",
+    "title": "TC-REG-014: Email with no domain",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "user@",
+      "password": "pass123"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-014.md"
+  },
+  {
+    "id": "TC-REG-015",
+    "title": "TC-REG-015: Email with no local part",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "@example.com",
+      "password": "pass123"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-015.md"
+  },
+  {
+    "id": "TC-REG-016",
+    "title": "TC-REG-016: Email at RFC min length (6 chars)",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "a@b.co",
+      "password": "pass123"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-016.md"
+  },
+  {
+    "id": "TC-REG-017",
+    "title": "TC-REG-017: Email at 254 chars (RFC max)",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "<254-character email>",
+      "password": "pass123"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-017.md"
+  },
+  {
+    "id": "TC-REG-018",
+    "title": "TC-REG-018: Email at 255 chars (RFC max + 1)",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "<255-character email>",
+      "password": "pass123"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-018.md"
+  },
+  {
+    "id": "TC-REG-019",
+    "title": "TC-REG-019: Password = 1 character (Min)",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "pw1@test.com",
+      "password": "a"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-019.md"
+  },
+  {
+    "id": "TC-REG-020",
+    "title": "TC-REG-020: Password = 1000 chars (stress Max)",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "pw1000@test.com",
+      "password": "<1000 x 'a'>"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-020.md"
+  },
+  {
+    "id": "TC-REG-021",
+    "title": "TC-REG-021: Name = empty string",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "\"\"",
+      "email": "emptyname@test.com",
+      "password": "pass123"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-021.md"
+  },
+  {
+    "id": "TC-REG-022",
+    "title": "TC-REG-022: Name = null",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "null",
+      "email": "nullname@test.com",
+      "password": "pass123"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-022.md"
+  },
+  {
+    "id": "TC-REG-023",
+    "title": "TC-REG-023: Name = 1 character (Min)",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "name1@test.com",
+      "password": "pass123"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-023.md"
+  },
+  {
+    "id": "TC-REG-024",
+    "title": "TC-REG-024: Name = 500 chars (stress)",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "<500 x 'A'>",
+      "email": "namelong@test.com",
+      "password": "pass123"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-024.md"
+  },
+  {
+    "id": "TC-REG-025",
+    "title": "TC-REG-025: Role omitted to defaults to user",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "roledefault@test.com",
+      "password": "pass123",
+      "role": "Omitted"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-025.md"
+  },
+  {
+    "id": "TC-REG-026",
+    "title": "TC-REG-026: Role = user explicitly",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "roleuser@test.com",
+      "password": "pass123",
+      "role": "user"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-026.md"
+  },
+  {
+    "id": "TC-REG-027",
+    "title": "TC-REG-027: Mass assignment — role = admin",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "roleadmin@test.com",
+      "password": "pass123",
+      "role": "admin"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-027.md"
+  },
+  {
+    "id": "TC-REG-028",
+    "title": "TC-REG-028: Role = invalid enum value",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "roleinvalid@test.com",
+      "password": "pass123",
+      "role": "superuser"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-028.md"
+  },
+  {
+    "id": "TC-REG-029",
+    "title": "TC-REG-029: Phone optional — omitted",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "nophone@test.com",
+      "password": "pass123"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-029.md"
+  },
+  {
+    "id": "TC-REG-030",
+    "title": "TC-REG-030: Phone = valid nominal",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "phone@test.com",
+      "password": "pass123",
+      "phone": "0901234567"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-030.md"
+  },
+  {
+    "id": "TC-REG-031",
+    "title": "TC-REG-031: Phone = non-numeric string",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "phonestr@test.com",
+      "password": "pass123",
+      "phone": "not-a-phone"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-031.md"
+  },
+  {
+    "id": "TC-REG-032",
+    "title": "TC-REG-032: Shipping address optional — omitted",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "A",
+      "email": "noaddr@test.com",
+      "password": "pass123"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-032.md"
+  },
+  {
+    "id": "TC-REG-033",
+    "title": "TC-REG-033: Empty request body {}",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "Request Body": "{}"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-033.md"
+  },
+  {
+    "id": "TC-REG-034",
+    "title": "TC-REG-034: Non-JSON content type",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "Content-Type": "text/plain",
+      "Body": "name=A&email=a@b.co&password=pass"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-REG-034.md"
+  },
+  {
+    "id": "TC-REG-035",
+    "title": "TC-REG-035: Concurrent duplicate registration",
+    "requirementId": "FR-REG-01",
+    "testData": {
+      "name": "Race User",
+      "email": "race@test.com",
+      "password": "pass123"
+    },
+    "expectedStatus": 201,
+    "sourceFile": "TC-REG-035.md"
+  },
+  {
+    "id": "TC-CHECKOUT-001",
+    "title": "TC-CHECKOUT-001: Happy path — valid full checkout",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "Authorization": "Bearer <valid_token>",
+      "total_amount": "150000",
+      "shipping_address": "123 Nguyen Hue, Quan 1, TPHCM"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-001.md"
+  },
+  {
+    "id": "TC-CHECKOUT-002",
+    "title": "TC-CHECKOUT-002: Happy path — minimum plausible amount",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "Authorization": "Bearer <valid_token>",
+      "total_amount": "1",
+      "shipping_address": "A"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-002.md"
+  },
+  {
+    "id": "TC-CHECKOUT-003",
+    "title": "TC-CHECKOUT-003: Happy path — large valid address string",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "Authorization": "Bearer <valid_token>",
+      "total_amount": "50000",
+      "shipping_address": "<500 ký tự A>"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-003.md"
+  },
+  {
+    "id": "TC-CHECKOUT-004",
+    "title": "TC-CHECKOUT-004: No Authorization header",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "Authorization": "Omitted",
+      "total_amount": "100",
+      "shipping_address": "ABC"
+    },
+    "expectedStatus": 401,
+    "sourceFile": "TC-CHECKOUT-004.md"
+  },
+  {
+    "id": "TC-CHECKOUT-005",
+    "title": "TC-CHECKOUT-005: Invalid JWT token",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "Authorization": "Bearer invalid.jwt.xyz",
+      "total_amount": "100",
+      "shipping_address": "ABC"
+    },
+    "expectedStatus": 401,
+    "sourceFile": "TC-CHECKOUT-005.md"
+  },
+  {
+    "id": "TC-CHECKOUT-006",
+    "title": "TC-CHECKOUT-006: Expired JWT token",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "Authorization": "Bearer <expired_token>",
+      "total_amount": "100",
+      "shipping_address": "ABC"
+    },
+    "expectedStatus": 401,
+    "sourceFile": "TC-CHECKOUT-006.md"
+  },
+  {
+    "id": "TC-CHECKOUT-007",
+    "title": "TC-CHECKOUT-007: Token without Bearer prefix",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "Authorization": "<valid_token_no_prefix>",
+      "total_amount": "100",
+      "shipping_address": "ABC"
+    },
+    "expectedStatus": 401,
+    "sourceFile": "TC-CHECKOUT-007.md"
+  },
+  {
+    "id": "TC-CHECKOUT-008",
+    "title": "TC-CHECKOUT-008: Tampered JWT (modified payload)",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "Authorization": "Bearer <modified_token>",
+      "total_amount": "100",
+      "shipping_address": "ABC"
+    },
+    "expectedStatus": 401,
+    "sourceFile": "TC-CHECKOUT-008.md"
+  },
+  {
+    "id": "TC-CHECKOUT-009",
+    "title": "TC-CHECKOUT-009: total_amount = 0 (Min-1)",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "0",
+      "shipping_address": "123 Main St"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-CHECKOUT-009.md"
+  },
+  {
+    "id": "TC-CHECKOUT-010",
+    "title": "TC-CHECKOUT-010: total_amount = 1 (Min)",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "1",
+      "shipping_address": "123 Main St"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-010.md"
+  },
+  {
+    "id": "TC-CHECKOUT-011",
+    "title": "TC-CHECKOUT-011: total_amount = 2 (Min+1)",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "2",
+      "shipping_address": "123 Main St"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-011.md"
+  },
+  {
+    "id": "TC-CHECKOUT-012",
+    "title": "TC-CHECKOUT-012: total_amount = -1 (negative)",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "-1",
+      "shipping_address": "123 Main St"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-CHECKOUT-012.md"
+  },
+  {
+    "id": "TC-CHECKOUT-013",
+    "title": "TC-CHECKOUT-013: total_amount = -2147483648 (INT underflow)",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "-2147483648",
+      "shipping_address": "123 Main St"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-CHECKOUT-013.md"
+  },
+  {
+    "id": "TC-CHECKOUT-014",
+    "title": "TC-CHECKOUT-014: total_amount = 2147483646 (Max-1)",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "2147483646",
+      "shipping_address": "123 Main St"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-014.md"
+  },
+  {
+    "id": "TC-CHECKOUT-015",
+    "title": "TC-CHECKOUT-015: total_amount = 2147483647 (INT32 Max)",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "2147483647",
+      "shipping_address": "123 Main St"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-015.md"
+  },
+  {
+    "id": "TC-CHECKOUT-016",
+    "title": "TC-CHECKOUT-016: total_amount = 2147483648 (INT32 Max+1)",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "2147483648",
+      "shipping_address": "123 Main St"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-CHECKOUT-016.md"
+  },
+  {
+    "id": "TC-CHECKOUT-017",
+    "title": "TC-CHECKOUT-017: total_amount = null",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "null",
+      "shipping_address": "123 Main St"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-CHECKOUT-017.md"
+  },
+  {
+    "id": "TC-CHECKOUT-018",
+    "title": "TC-CHECKOUT-018: total_amount missing from body",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "shipping_address": "123 Main St"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-CHECKOUT-018.md"
+  },
+  {
+    "id": "TC-CHECKOUT-019",
+    "title": "TC-CHECKOUT-019: total_amount as string type",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "\"150000\"",
+      "shipping_address": "123 Main St"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-019.md"
+  },
+  {
+    "id": "TC-CHECKOUT-020",
+    "title": "TC-CHECKOUT-020: total_amount as float",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "99.99",
+      "shipping_address": "123 Main St"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-020.md"
+  },
+  {
+    "id": "TC-CHECKOUT-021",
+    "title": "TC-CHECKOUT-021: shipping_address = 1 char (Min)",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "100",
+      "shipping_address": "A"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-021.md"
+  },
+  {
+    "id": "TC-CHECKOUT-022",
+    "title": "TC-CHECKOUT-022: shipping_address = empty string",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "100",
+      "shipping_address": "\"\""
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-CHECKOUT-022.md"
+  },
+  {
+    "id": "TC-CHECKOUT-023",
+    "title": "TC-CHECKOUT-023: shipping_address = null",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "100",
+      "shipping_address": "null"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-CHECKOUT-023.md"
+  },
+  {
+    "id": "TC-CHECKOUT-024",
+    "title": "TC-CHECKOUT-024: shipping_address missing from body",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "100"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-CHECKOUT-024.md"
+  },
+  {
+    "id": "TC-CHECKOUT-025",
+    "title": "TC-CHECKOUT-025: shipping_address = 500 chars (stress)",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "100",
+      "shipping_address": "<500 x 'A'>"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-025.md"
+  },
+  {
+    "id": "TC-CHECKOUT-026",
+    "title": "TC-CHECKOUT-026: shipping_address = Vietnamese Unicode",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "100",
+      "shipping_address": "45 Đường Lê Lợi, Quận 1, TP.HCM"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-026.md"
+  },
+  {
+    "id": "TC-CHECKOUT-027",
+    "title": "TC-CHECKOUT-027: Empty body {}",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "Request Body": "{}"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-CHECKOUT-027.md"
+  },
+  {
+    "id": "TC-CHECKOUT-028",
+    "title": "TC-CHECKOUT-028: Mass assignment — inject user_id in body",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "100",
+      "shipping_address": "X",
+      "user_id": "1"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-028.md"
+  },
+  {
+    "id": "TC-CHECKOUT-029",
+    "title": "TC-CHECKOUT-029: Mass assignment — inject status in body",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "100",
+      "shipping_address": "X",
+      "status": "completed"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-029.md"
+  },
+  {
+    "id": "TC-CHECKOUT-030",
+    "title": "TC-CHECKOUT-030: Mass assignment — inject id in body",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "100",
+      "shipping_address": "X",
+      "id": "9999"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-030.md"
+  },
+  {
+    "id": "TC-CHECKOUT-031",
+    "title": "TC-CHECKOUT-031: Mass assignment — inject created_at",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "100",
+      "shipping_address": "X",
+      "created_at": "2000-01-01"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-031.md"
+  },
+  {
+    "id": "TC-CHECKOUT-032",
+    "title": "TC-CHECKOUT-032: Verify user_id binding from token",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "100",
+      "shipping_address": "X"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-032.md"
+  },
+  {
+    "id": "TC-CHECKOUT-033",
+    "title": "TC-CHECKOUT-033: Non-JSON Content-Type",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "Content-Type": "text/plain",
+      "Body": "total_amount=100&shipping_address=X"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-CHECKOUT-033.md"
+  },
+  {
+    "id": "TC-CHECKOUT-034",
+    "title": "TC-CHECKOUT-034: Malformed JSON body",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "Raw Body": "{total_amount: 100, shipping_address: X}"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-CHECKOUT-034.md"
+  },
+  {
+    "id": "TC-CHECKOUT-035",
+    "title": "TC-CHECKOUT-035: Concurrent checkouts — same user",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "100",
+      "shipping_address": "X"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-035.md"
+  },
+  {
+    "id": "TC-CHECKOUT-036",
+    "title": "TC-CHECKOUT-036: total_amount as boolean true",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "true",
+      "shipping_address": "X"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-CHECKOUT-036.md"
+  },
+  {
+    "id": "TC-CHECKOUT-037",
+    "title": "TC-CHECKOUT-037: Extra unknown fields in body",
+    "requirementId": "FR-CHECKOUT-01",
+    "testData": {
+      "total_amount": "100",
+      "shipping_address": "X",
+      "discount": "50",
+      "coupon_code": "FREE"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-CHECKOUT-037.md"
+  },
+  {
+    "id": "TC-OSM-001",
+    "title": "TC-OSM-001: :id = valid existing order",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "API Path": "/api/admin/orders/1/status",
+      "status": "confirmed"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-OSM-001.md"
+  },
+  {
+    "id": "TC-OSM-002",
+    "title": "TC-OSM-002: :id = 0 (Min-1)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "API Path": "/api/admin/orders/0/status",
+      "status": "confirmed"
+    },
+    "expectedStatus": 404,
+    "sourceFile": "TC-OSM-002.md"
+  },
+  {
+    "id": "TC-OSM-003",
+    "title": "TC-OSM-003: :id = non-existent integer (99999)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "API Path": "/api/admin/orders/99999/status",
+      "status": "confirmed"
+    },
+    "expectedStatus": 404,
+    "sourceFile": "TC-OSM-003.md"
+  },
+  {
+    "id": "TC-OSM-004",
+    "title": "TC-OSM-004: :id = negative (-1)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "API Path": "/api/admin/orders/-1/status",
+      "status": "confirmed"
+    },
+    "expectedStatus": 404,
+    "sourceFile": "TC-OSM-004.md"
+  },
+  {
+    "id": "TC-OSM-005",
+    "title": "TC-OSM-005: :id = string \"abc\"",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "API Path": "/api/admin/orders/abc/status",
+      "status": "confirmed"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-005.md"
+  },
+  {
+    "id": "TC-OSM-006",
+    "title": "TC-OSM-006: :id = float \"1.5\"",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "API Path": "/api/admin/orders/1.5/status",
+      "status": "confirmed"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-006.md"
+  },
+  {
+    "id": "TC-OSM-007",
+    "title": "TC-OSM-007: :id = SQL Injection",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "API Path": "/api/admin/orders/1 OR 1=1/status",
+      "status": "confirmed"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-007.md"
+  },
+  {
+    "id": "TC-OSM-008",
+    "title": "TC-OSM-008: No Authorization header",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "Authorization": "None",
+      "status": "confirmed"
+    },
+    "expectedStatus": 401,
+    "sourceFile": "TC-OSM-008.md"
+  },
+  {
+    "id": "TC-OSM-009",
+    "title": "TC-OSM-009: Regular user token on admin endpoint",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "JWT Token": "User Token",
+      "status": "confirmed"
+    },
+    "expectedStatus": 403,
+    "sourceFile": "TC-OSM-009.md"
+  },
+  {
+    "id": "TC-OSM-010",
+    "title": "TC-OSM-010: pending -> confirmed (VALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "confirmed"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-OSM-010.md"
+  },
+  {
+    "id": "TC-OSM-011",
+    "title": "TC-OSM-011: pending -> canceled (VALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "canceled"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-OSM-011.md"
+  },
+  {
+    "id": "TC-OSM-012",
+    "title": "TC-OSM-012: pending -> shipping (INVALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "shipping"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-012.md"
+  },
+  {
+    "id": "TC-OSM-013",
+    "title": "TC-OSM-013: pending -> delivered (INVALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "delivered"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-013.md"
+  },
+  {
+    "id": "TC-OSM-014",
+    "title": "TC-OSM-014: pending -> pending (Self-transition INVALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "pending"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-014.md"
+  },
+  {
+    "id": "TC-OSM-015",
+    "title": "TC-OSM-015: confirmed -> shipping (VALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "shipping"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-OSM-015.md"
+  },
+  {
+    "id": "TC-OSM-016",
+    "title": "TC-OSM-016: confirmed -> canceled (VALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "canceled"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-OSM-016.md"
+  },
+  {
+    "id": "TC-OSM-017",
+    "title": "TC-OSM-017: confirmed -> pending (INVALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "pending"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-017.md"
+  },
+  {
+    "id": "TC-OSM-018",
+    "title": "TC-OSM-018: confirmed -> delivered (INVALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "delivered"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-018.md"
+  },
+  {
+    "id": "TC-OSM-019",
+    "title": "TC-OSM-020: shipping -> delivered (VALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "delivered"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-OSM-019.md"
+  },
+  {
+    "id": "TC-OSM-020",
+    "title": "Unknown",
+    "requirementId": null,
+    "testData": {},
+    "expectedStatus": null,
+    "sourceFile": "TC-OSM-020.md"
+  },
+  {
+    "id": "TC-OSM-021",
+    "title": "TC-OSM-021: shipping -> canceled (INVALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "canceled"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-021.md"
+  },
+  {
+    "id": "TC-OSM-022",
+    "title": "TC-OSM-022: shipping -> confirmed (INVALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "confirmed"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-022.md"
+  },
+  {
+    "id": "TC-OSM-023",
+    "title": "TC-OSM-023: shipping -> pending (INVALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "pending"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-023.md"
+  },
+  {
+    "id": "TC-OSM-024",
+    "title": "TC-OSM-024: shipping -> shipping (Self-transition INVALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "shipping"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-024.md"
+  },
+  {
+    "id": "TC-OSM-025",
+    "title": "TC-OSM-025: delivered -> confirmed (INVALID - Terminal State)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "confirmed"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-025.md"
+  },
+  {
+    "id": "TC-OSM-026",
+    "title": "TC-OSM-026: delivered -> pending (INVALID - Terminal State)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "pending"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-026.md"
+  },
+  {
+    "id": "TC-OSM-027",
+    "title": "TC-OSM-027: delivered -> shipping (INVALID - Terminal State)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "shipping"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-027.md"
+  },
+  {
+    "id": "TC-OSM-028",
+    "title": "TC-OSM-028: delivered -> canceled (INVALID - Terminal State)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "canceled"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-028.md"
+  },
+  {
+    "id": "TC-OSM-029",
+    "title": "TC-OSM-029: delivered -> delivered (Self-transition INVALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "delivered"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-029.md"
+  },
+  {
+    "id": "TC-OSM-030",
+    "title": "TC-OSM-030: canceled -> delivered (DEFECT-01 - Anomalous VALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "delivered"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-OSM-030.md"
+  },
+  {
+    "id": "TC-OSM-031",
+    "title": "TC-OSM-031: canceled -> pending (INVALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "pending"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-031.md"
+  },
+  {
+    "id": "TC-OSM-032",
+    "title": "TC-OSM-032: canceled -> confirmed (INVALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "confirmed"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-032.md"
+  },
+  {
+    "id": "TC-OSM-033",
+    "title": "TC-OSM-033: canceled -> shipping (INVALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "shipping"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-033.md"
+  },
+  {
+    "id": "TC-OSM-034",
+    "title": "TC-OSM-034: canceled -> canceled (Self-transition INVALID)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "canceled"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-034.md"
+  },
+  {
+    "id": "TC-OSM-035",
+    "title": "TC-OSM-035: status = null",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "null"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-035.md"
+  },
+  {
+    "id": "TC-OSM-036",
+    "title": "TC-OSM-036: status missing from body",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "Body": "{}"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-036.md"
+  },
+  {
+    "id": "TC-OSM-037",
+    "title": "TC-OSM-037: status = \"\" (Empty String)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "\"\""
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-037.md"
+  },
+  {
+    "id": "TC-OSM-038",
+    "title": "TC-OSM-038: status = \"Confirmed\" (Wrong Case)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "Confirmed"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-038.md"
+  },
+  {
+    "id": "TC-OSM-039",
+    "title": "TC-OSM-039: status = \"CONFIRMED\" (Uppercase)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "CONFIRMED"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-039.md"
+  },
+  {
+    "id": "TC-OSM-040",
+    "title": "TC-OSM-040: status = \"refunded\" (Out of Enum)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "refunded"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-040.md"
+  },
+  {
+    "id": "TC-OSM-041",
+    "title": "TC-OSM-041: status = \"processing\" (Out of Enum)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "processing"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-041.md"
+  },
+  {
+    "id": "TC-OSM-042",
+    "title": "TC-OSM-042: status = \" confirmed\" (Leading Space)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "\" confirmed\""
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-042.md"
+  },
+  {
+    "id": "TC-OSM-043",
+    "title": "TC-OSM-043: status = 1 (Wrong Type)",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "1"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-043.md"
+  },
+  {
+    "id": "TC-OSM-044",
+    "title": "TC-OSM-044: Empty Request Body",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "Body": "Empty"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-044.md"
+  },
+  {
+    "id": "TC-OSM-045",
+    "title": "TC-OSM-045: Happy Path - Cancel Own Pending Order",
+    "requirementId": "FR-OSM-02",
+    "testData": {
+      "Endpoint": "/api/orders/X/cancel",
+      "JWT": "User A Token"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-OSM-045.md"
+  },
+  {
+    "id": "TC-OSM-046",
+    "title": "TC-OSM-046: Cancel Own Confirmed Order",
+    "requirementId": "FR-OSM-02",
+    "testData": {
+      "Endpoint": "/api/orders/X/cancel"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-OSM-046.md"
+  },
+  {
+    "id": "TC-OSM-047",
+    "title": "TC-OSM-047: Cancel Another User's Order (BOLA / IDOR)",
+    "requirementId": "FR-OSM-02",
+    "testData": {
+      "Endpoint": "/api/orders/Y/cancel",
+      "JWT": "User A Token"
+    },
+    "expectedStatus": 404,
+    "sourceFile": "TC-OSM-047.md"
+  },
+  {
+    "id": "TC-OSM-048",
+    "title": "TC-OSM-048: Cancel Non-existent Order",
+    "requirementId": "FR-OSM-02",
+    "testData": {
+      "Endpoint": "/api/orders/99999/cancel"
+    },
+    "expectedStatus": 404,
+    "sourceFile": "TC-OSM-048.md"
+  },
+  {
+    "id": "TC-OSM-049",
+    "title": "TC-OSM-049: No Authorization Header on Cancel Endpoint",
+    "requirementId": "FR-OSM-02",
+    "testData": {
+      "Authorization": "Missing"
+    },
+    "expectedStatus": 401,
+    "sourceFile": "TC-OSM-049.md"
+  },
+  {
+    "id": "TC-OSM-050",
+    "title": "TC-OSM-050: :id = 0 on Cancel Endpoint",
+    "requirementId": "FR-OSM-02",
+    "testData": {
+      "Order ID": "0"
+    },
+    "expectedStatus": 404,
+    "sourceFile": "TC-OSM-050.md"
+  },
+  {
+    "id": "TC-OSM-051",
+    "title": "TC-OSM-051: :id = -1 on Cancel Endpoint",
+    "requirementId": "FR-OSM-02",
+    "testData": {
+      "Order ID": "-1"
+    },
+    "expectedStatus": 404,
+    "sourceFile": "TC-OSM-051.md"
+  },
+  {
+    "id": "TC-OSM-052",
+    "title": "TC-OSM-052: :id = \"abc\" on Cancel Endpoint",
+    "requirementId": "FR-OSM-02",
+    "testData": {
+      "Order ID": "abc"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-052.md"
+  },
+  {
+    "id": "TC-OSM-053",
+    "title": "TC-OSM-053: Cancel pending Order (ALLOWED)",
+    "requirementId": "FR-OSM-02",
+    "testData": {
+      "Endpoint": "/api/orders/:id/cancel",
+      "JWT": "User A Token"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-OSM-053.md"
+  },
+  {
+    "id": "TC-OSM-054",
+    "title": "TC-OSM-054: Cancel confirmed Order (ALLOWED)",
+    "requirementId": "FR-OSM-02",
+    "testData": {
+      "Endpoint": "/api/orders/:id/cancel",
+      "JWT": "User A Token"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-OSM-054.md"
+  },
+  {
+    "id": "TC-OSM-055",
+    "title": "TC-OSM-055: Cancel shipping Order (DEFECT-02 - Currently ALLOWED, Should Be BLOCKED)",
+    "requirementId": "FR-OSM-02",
+    "testData": {
+      "Endpoint": "/api/orders/:id/cancel",
+      "JWT": "User A Token"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-OSM-055.md"
+  },
+  {
+    "id": "TC-OSM-056",
+    "title": "TC-OSM-056: Cancel delivered Order (BLOCKED)",
+    "requirementId": "FR-OSM-02",
+    "testData": {
+      "Endpoint": "/api/orders/:id/cancel",
+      "JWT": "User A Token"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-056.md"
+  },
+  {
+    "id": "TC-OSM-057",
+    "title": "TC-OSM-057: Cancel Already Canceled Order (BLOCKED)",
+    "requirementId": "FR-OSM-02",
+    "testData": {
+      "Endpoint": "/api/orders/:id/cancel",
+      "JWT": "User A Token"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-057.md"
+  },
+  {
+    "id": "TC-OSM-058",
+    "title": "TC-OSM-058: Concurrent Admin Status Update on Same Order",
+    "requirementId": "FR-OSM-01",
+    "testData": {},
+    "expectedStatus": 200,
+    "sourceFile": "TC-OSM-058.md"
+  },
+  {
+    "id": "TC-OSM-059",
+    "title": "TC-OSM-059: Admin Updates Status While User Cancels Concurrently",
+    "requirementId": "FR-OSM-01",
+    "testData": {},
+    "expectedStatus": null,
+    "sourceFile": "TC-OSM-059.md"
+  },
+  {
+    "id": "TC-OSM-060",
+    "title": "TC-OSM-060: Full Happy Path Lifecycle (pending -> confirmed -> shipping -> delivered)",
+    "requirementId": "FR-OSM-01",
+    "testData": {},
+    "expectedStatus": null,
+    "sourceFile": "TC-OSM-060.md"
+  },
+  {
+    "id": "TC-OSM-061",
+    "title": "TC-OSM-061: Update After Terminal State",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "confirmed"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-061.md"
+  },
+  {
+    "id": "TC-OSM-062",
+    "title": "TC-OSM-062: User Cancels Pending Order Then Admin Tries Update",
+    "requirementId": "FR-OSM-01",
+    "testData": {
+      "status": "confirmed"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-OSM-062.md"
+  },
+  {
+    "id": "TC-OSM-063",
+    "title": "TC-OSM-063: Admin Cancels Then Attempts canceled -> delivered (DEFECT-01 Path)",
+    "requirementId": "FR-OSM-01",
+    "testData": {},
+    "expectedStatus": 200,
+    "sourceFile": "TC-OSM-063.md"
+  },
+  {
+    "id": "TC-IMPORT-001",
+    "title": "TC-IMPORT-001: Happy path — single valid product, all fields",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "Áo thun nam",
+      "price": "150000",
+      "description": "Mô tả sản phẩm",
+      "imageUrl": "https://example.com/img.jpg",
+      "category_id": "1"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-001.md"
+  },
+  {
+    "id": "TC-IMPORT-002",
+    "title": "TC-IMPORT-002: Happy path — 5 valid products",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "products": "5 sản phẩm hợp lệ"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-002.md"
+  },
+  {
+    "id": "TC-IMPORT-003",
+    "title": "TC-IMPORT-003: Products = empty array []",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "products": "[]"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-IMPORT-003.md"
+  },
+  {
+    "id": "TC-IMPORT-004",
+    "title": "TC-IMPORT-004: Products = null",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "products": "null"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-IMPORT-004.md"
+  },
+  {
+    "id": "TC-IMPORT-005",
+    "title": "TC-IMPORT-005: Products key missing entirely",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "Request Body": "{}"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-IMPORT-005.md"
+  },
+  {
+    "id": "TC-IMPORT-006",
+    "title": "TC-IMPORT-006: Products = string",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "products": "\"not an array\""
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-IMPORT-006.md"
+  },
+  {
+    "id": "TC-IMPORT-007",
+    "title": "TC-IMPORT-007: Products = object {}",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "products": "{}"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-IMPORT-007.md"
+  },
+  {
+    "id": "TC-IMPORT-008",
+    "title": "TC-IMPORT-008: Products = integer 1",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "products": "1"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-IMPORT-008.md"
+  },
+  {
+    "id": "TC-IMPORT-009",
+    "title": "TC-IMPORT-009: Products = 1 item (Min)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "products": "1 sản phẩm hợp lệ"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-009.md"
+  },
+  {
+    "id": "TC-IMPORT-010",
+    "title": "TC-IMPORT-010: Products = 2 items (Min+1)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "products": "2 sản phẩm hợp lệ"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-010.md"
+  },
+  {
+    "id": "TC-IMPORT-011",
+    "title": "TC-IMPORT-011: Products = 1000 items (stress)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "products": "1000 sản phẩm"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-011.md"
+  },
+  {
+    "id": "TC-IMPORT-012",
+    "title": "TC-IMPORT-012: Products array contains null element",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "products": "[null]"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-012.md"
+  },
+  {
+    "id": "TC-IMPORT-013",
+    "title": "TC-IMPORT-013: Products array of primitives",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "products": "[1,2]"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-013.md"
+  },
+  {
+    "id": "TC-IMPORT-014",
+    "title": "TC-IMPORT-014: No Authorization header",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "Authorization": "Omitted"
+    },
+    "expectedStatus": 401,
+    "sourceFile": "TC-IMPORT-014.md"
+  },
+  {
+    "id": "TC-IMPORT-015",
+    "title": "TC-IMPORT-015: Regular user token (non-admin)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "Authorization": "Bearer <user_token>"
+    },
+    "expectedStatus": 403,
+    "sourceFile": "TC-IMPORT-015.md"
+  },
+  {
+    "id": "TC-IMPORT-016",
+    "title": "TC-IMPORT-016: Empty request body",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "Request Body": "Empty (No Body)"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-IMPORT-016.md"
+  },
+  {
+    "id": "TC-IMPORT-017",
+    "title": "TC-IMPORT-017: Malformed JSON body",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "Body": "{products: [broken json"
+    },
+    "expectedStatus": 400,
+    "sourceFile": "TC-IMPORT-017.md"
+  },
+  {
+    "id": "TC-IMPORT-018",
+    "title": "TC-IMPORT-018: name missing — single row",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "products": "[{\"price\":100}]"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-018.md"
+  },
+  {
+    "id": "TC-IMPORT-019",
+    "title": "TC-IMPORT-019: name = null",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "null",
+      "price": "100"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-019.md"
+  },
+  {
+    "id": "TC-IMPORT-020",
+    "title": "TC-IMPORT-020: name = empty string",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "\"\"",
+      "price": "100"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-020.md"
+  },
+  {
+    "id": "TC-IMPORT-021",
+    "title": "TC-IMPORT-021: name = \"A\" (1 char)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "A",
+      "price": "100"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-021.md"
+  },
+  {
+    "id": "TC-IMPORT-022",
+    "title": "TC-IMPORT-022: name = \"AB\" (2 chars)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "AB",
+      "price": "100"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-022.md"
+  },
+  {
+    "id": "TC-IMPORT-023",
+    "title": "TC-IMPORT-023: name = 255-character string",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "<255 x 'A'>",
+      "price": "100"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-023.md"
+  },
+  {
+    "id": "TC-IMPORT-024",
+    "title": "TC-IMPORT-024: name = 1000-character string",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "<1000 x 'A'>",
+      "price": "100"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-024.md"
+  },
+  {
+    "id": "TC-IMPORT-025",
+    "title": "TC-IMPORT-025: name = spaces only",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "\"   \"",
+      "price": "100"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-025.md"
+  },
+  {
+    "id": "TC-IMPORT-026",
+    "title": "TC-IMPORT-026: name = \"0\"",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "\"0\"",
+      "price": "100"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-026.md"
+  },
+  {
+    "id": "TC-IMPORT-027",
+    "title": "TC-IMPORT-027: name = integer type 12345",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "12345",
+      "price": "100"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-027.md"
+  },
+  {
+    "id": "TC-IMPORT-028",
+    "title": "TC-IMPORT-028: Mixed batch — 1 valid + 1 missing name",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "Row 1": "{\"name\":\"Valid SP\",\"price\":100}",
+      "Row 2": "{\"price\":200}"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-028.md"
+  },
+  {
+    "id": "TC-IMPORT-029",
+    "title": "TC-IMPORT-029: Mixed batch - first row missing name",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "Row 1": "{\"price\":100}",
+      "Row 2": "{\"name\":\"Valid SP\",\"price\":200}"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-029.md"
+  },
+  {
+    "id": "TC-IMPORT-030",
+    "title": "TC-IMPORT-030: All rows missing name",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "Row 1": "{\"price\":100}",
+      "Row 2": "{\"price\":200}",
+      "Row 3": "{\"price\":300}"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-030.md"
+  },
+  {
+    "id": "TC-IMPORT-031",
+    "title": "TC-IMPORT-031: Vietnamese Unicode name",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "Áo dài truyền thống Việt Nam",
+      "price": "500000"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-031.md"
+  },
+  {
+    "id": "TC-IMPORT-032",
+    "title": "TC-IMPORT-032: Emoji in name",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "👜 Túi xách cao cấp",
+      "price": "300000"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-032.md"
+  },
+  {
+    "id": "TC-IMPORT-033",
+    "title": "TC-IMPORT-033: price = 1 (Min)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "1"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-033.md"
+  },
+  {
+    "id": "TC-IMPORT-034",
+    "title": "TC-IMPORT-034: price = 0 (zero boundary)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "0"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-034.md"
+  },
+  {
+    "id": "TC-IMPORT-035",
+    "title": "TC-IMPORT-035: price = -1 (negative)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "-1"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-035.md"
+  },
+  {
+    "id": "TC-IMPORT-036",
+    "title": "TC-IMPORT-036: price = -99999 (large negative)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "-99999"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-036.md"
+  },
+  {
+    "id": "TC-IMPORT-037",
+    "title": "TC-IMPORT-037: price = 2147483647 (INT32 Max)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "2147483647"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-037.md"
+  },
+  {
+    "id": "TC-IMPORT-038",
+    "title": "TC-IMPORT-038: price = 2147483648 (INT32 Max+1)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "2147483648"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-038.md"
+  },
+  {
+    "id": "TC-IMPORT-039",
+    "title": "TC-IMPORT-039: price = 99.99 (float)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "99.99"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-039.md"
+  },
+  {
+    "id": "TC-IMPORT-040",
+    "title": "TC-IMPORT-040: price = \"150000\" (string)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "\"150000\""
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-040.md"
+  },
+  {
+    "id": "TC-IMPORT-041",
+    "title": "TC-IMPORT-041: price = null",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "null"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-041.md"
+  },
+  {
+    "id": "TC-IMPORT-042",
+    "title": "TC-IMPORT-042: price missing",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-042.md"
+  },
+  {
+    "id": "TC-IMPORT-043",
+    "title": "TC-IMPORT-043: category_id missing → default 1",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-043.md"
+  },
+  {
+    "id": "TC-IMPORT-044",
+    "title": "TC-IMPORT-044: category_id = null -> default 1",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100",
+      "category_id": "null"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-044.md"
+  },
+  {
+    "id": "TC-IMPORT-045",
+    "title": "TC-IMPORT-045: category_id = 0 -> default 1 (falsy bug)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100",
+      "category_id": "0"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-045.md"
+  },
+  {
+    "id": "TC-IMPORT-046",
+    "title": "TC-IMPORT-046: category_id = 1 (explicit)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100",
+      "category_id": "1"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-046.md"
+  },
+  {
+    "id": "TC-IMPORT-047",
+    "title": "TC-IMPORT-047: category_id = 2 (valid FK)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100",
+      "category_id": "2"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-047.md"
+  },
+  {
+    "id": "TC-IMPORT-048",
+    "title": "TC-IMPORT-048: category_id = 9999 (non-existent FK)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100",
+      "category_id": "9999"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-048.md"
+  },
+  {
+    "id": "TC-IMPORT-049",
+    "title": "TC-IMPORT-049: category_id = -1 (negative)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100",
+      "category_id": "-1"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-049.md"
+  },
+  {
+    "id": "TC-IMPORT-050",
+    "title": "TC-IMPORT-050: category_id = empty string",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100",
+      "category_id": "\"\""
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-050.md"
+  },
+  {
+    "id": "TC-IMPORT-051",
+    "title": "TC-IMPORT-051: category_id = \"1\" (string)",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100",
+      "category_id": "\"1\""
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-051.md"
+  },
+  {
+    "id": "TC-IMPORT-052",
+    "title": "TC-IMPORT-052: description missing -> default \"\"",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-052.md"
+  },
+  {
+    "id": "TC-IMPORT-053",
+    "title": "TC-IMPORT-053: description = null -> default \"\"",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100",
+      "description": "null"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-053.md"
+  },
+  {
+    "id": "TC-IMPORT-054",
+    "title": "TC-IMPORT-054: description = \"Valid description\"",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100",
+      "description": "Mô tả chi tiết sản phẩm"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-054.md"
+  },
+  {
+    "id": "TC-IMPORT-055",
+    "title": "TC-IMPORT-055: imageUrl missing -> default \"\"",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-055.md"
+  },
+  {
+    "id": "TC-IMPORT-056",
+    "title": "TC-IMPORT-056: imageUrl = null -> default \"\"",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100",
+      "imageUrl": "null"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-056.md"
+  },
+  {
+    "id": "TC-IMPORT-057",
+    "title": "TC-IMPORT-057: imageUrl = valid URL",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100",
+      "imageUrl": "https://cdn.example.com/img.jpg"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-057.md"
+  },
+  {
+    "id": "TC-IMPORT-058",
+    "title": "TC-IMPORT-058: imageUrl = non-URL string",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "SP Test",
+      "price": "100",
+      "imageUrl": "not-a-valid-url"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-058.md"
+  },
+  {
+    "id": "TC-IMPORT-059",
+    "title": "TC-IMPORT-059: Minimal row - name only",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "name": "Minimal SP"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-059.md"
+  },
+  {
+    "id": "TC-IMPORT-060",
+    "title": "TC-IMPORT-060: Concurrent import - same product names",
+    "requirementId": "FR-IMPORT-01",
+    "testData": {
+      "Request 1": "{\"products\":[{\"name\":\"Duplicate SP\"}]}",
+      "Request 2": "{\"products\":[{\"name\":\"Duplicate SP\"}]}"
+    },
+    "expectedStatus": 200,
+    "sourceFile": "TC-IMPORT-060.md"
+  }
+]

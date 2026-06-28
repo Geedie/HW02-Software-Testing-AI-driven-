@@ -1,0 +1,18 @@
+{
+  "runId": "2026-06-28T18-30-29-238Z",
+  "generatedAt": "2026-06-28T18:30:29.238Z",
+  "summary": {
+    "explicitBugCount": 0,
+    "failedAssertionCount": 1
+  },
+  "explicitBugs": [],
+  "failedAssertions": [
+    {
+      "title": "TC-IMPORT-001 — TC-IMPORT-001: Happy path — single valid product, all fields",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-001] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    }
+  ]
+}

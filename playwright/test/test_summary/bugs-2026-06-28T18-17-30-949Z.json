@@ -1,0 +1,891 @@
+{
+  "runId": "2026-06-28T18-17-30-949Z",
+  "generatedAt": "2026-06-28T18:17:30.949Z",
+  "summary": {
+    "explicitBugCount": 35,
+    "failedAssertionCount": 35
+  },
+  "explicitBugs": [
+    {
+      "timestamp": "2026-06-28T18:17:27.533Z",
+      "testId": "TC-REG-001",
+      "title": "TC-REG-001: Happy path — valid full registration",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "John Doe",
+        "email": "newuser@test.com",
+        "password": "Password123!",
+        "phone": "0901234567",
+        "shipping_address": "123 Main St"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 3
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:27.536Z",
+      "testId": "TC-REG-004",
+      "title": "TC-REG-004: Duplicate email — seeded admin",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "name": "Test",
+        "email": "admin@eshop.com",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 4
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:27.539Z",
+      "testId": "TC-REG-002",
+      "title": "TC-REG-002: Happy path — minimal required fields only",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "Jane",
+        "email": "minimal@test.com",
+        "password": "pass"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 5
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:27.550Z",
+      "testId": "TC-REG-006",
+      "title": "TC-REG-006: Duplicate email — self-registered",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "name": "Dup",
+        "email": "dup@test.com",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 6
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:27.550Z",
+      "testId": "TC-REG-005",
+      "title": "TC-REG-005: Duplicate email — seeded user",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "name": "Test",
+        "email": "test@eshop.com",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 7
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:27.549Z",
+      "testId": "TC-REG-003",
+      "title": "TC-REG-003: Role defaults to 'user' when omitted",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "RoleTest",
+        "email": "roletest@test.com",
+        "password": "pass123",
+        "role": "Omitted"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 8
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:27.557Z",
+      "testId": "TC-REG-008",
+      "title": "TC-REG-008: Missing password field",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "name": "NoPass",
+        "email": "nopass@test.com"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 9
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:27.560Z",
+      "testId": "TC-REG-007",
+      "title": "TC-REG-007: Missing email field",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "name": "NoEmail",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 10
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:28.390Z",
+      "testId": "TC-REG-010",
+      "title": "TC-REG-010: Empty string password",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "emptypass@test.com",
+        "password": "\"\""
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 11
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:28.396Z",
+      "testId": "TC-REG-009",
+      "title": "TC-REG-009: Empty string email",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "\"\"",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 12
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:28.398Z",
+      "testId": "TC-REG-013",
+      "title": "TC-REG-013: Email without @ symbol",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "invalidemail.com",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 13
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:28.404Z",
+      "testId": "TC-REG-015",
+      "title": "TC-REG-015: Email with no local part",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "@example.com",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 14
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:28.413Z",
+      "testId": "TC-REG-012",
+      "title": "TC-REG-012: Password = null",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "nullpass@test.com",
+        "password": "null"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 15
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:28.416Z",
+      "testId": "TC-REG-011",
+      "title": "TC-REG-011: Email = null",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "null",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 16
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:28.420Z",
+      "testId": "TC-REG-016",
+      "title": "TC-REG-016: Email at RFC min length (6 chars)",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "a@b.co",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 17
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:28.425Z",
+      "testId": "TC-REG-014",
+      "title": "TC-REG-014: Email with no domain",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "user@",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 18
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:29.212Z",
+      "testId": "TC-REG-017",
+      "title": "TC-REG-017: Email at 254 chars (RFC max)",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "<254-character email>",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 19
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:29.249Z",
+      "testId": "TC-REG-019",
+      "title": "TC-REG-019: Password = 1 character (Min)",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "pw1@test.com",
+        "password": "a"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 20
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:29.279Z",
+      "testId": "TC-REG-018",
+      "title": "TC-REG-018: Email at 255 chars (RFC max + 1)",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "<255-character email>",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 21
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:29.298Z",
+      "testId": "TC-REG-023",
+      "title": "TC-REG-023: Name = 1 character (Min)",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "name1@test.com",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 22
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:29.305Z",
+      "testId": "TC-REG-020",
+      "title": "TC-REG-020: Password = 1000 chars (stress Max)",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "pw1000@test.com",
+        "password": "<1000 x 'a'>"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 23
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:29.309Z",
+      "testId": "TC-REG-022",
+      "title": "TC-REG-022: Name = null",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "null",
+        "email": "nullname@test.com",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 24
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:29.389Z",
+      "testId": "TC-REG-024",
+      "title": "TC-REG-024: Name = 500 chars (stress)",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "<500 x 'A'>",
+        "email": "namelong@test.com",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 25
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:29.424Z",
+      "testId": "TC-REG-021",
+      "title": "TC-REG-021: Name = empty string",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "\"\"",
+        "email": "emptyname@test.com",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 26
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:30.095Z",
+      "testId": "TC-REG-025",
+      "title": "TC-REG-025: Role omitted to defaults to user",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "roledefault@test.com",
+        "password": "pass123",
+        "role": "Omitted"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 27
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:30.134Z",
+      "testId": "TC-REG-026",
+      "title": "TC-REG-026: Role = user explicitly",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "roleuser@test.com",
+        "password": "pass123",
+        "role": "user"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 28
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:30.146Z",
+      "testId": "TC-REG-027",
+      "title": "TC-REG-027: Mass assignment — role = admin",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "roleadmin@test.com",
+        "password": "pass123",
+        "role": "admin"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 29
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:30.157Z",
+      "testId": "TC-REG-028",
+      "title": "TC-REG-028: Role = invalid enum value",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "roleinvalid@test.com",
+        "password": "pass123",
+        "role": "superuser"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 30
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:30.177Z",
+      "testId": "TC-REG-030",
+      "title": "TC-REG-030: Phone = valid nominal",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "phone@test.com",
+        "password": "pass123",
+        "phone": "0901234567"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 31
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:30.191Z",
+      "testId": "TC-REG-029",
+      "title": "TC-REG-029: Phone optional — omitted",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "nophone@test.com",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 32
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:30.230Z",
+      "testId": "TC-REG-031",
+      "title": "TC-REG-031: Phone = non-numeric string",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "phonestr@test.com",
+        "password": "pass123",
+        "phone": "not-a-phone"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 33
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:30.294Z",
+      "testId": "TC-REG-032",
+      "title": "TC-REG-032: Shipping address optional — omitted",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "A",
+        "email": "noaddr@test.com",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 34
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:30.736Z",
+      "testId": "TC-REG-033",
+      "title": "TC-REG-033: Empty request body {}",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "Request Body": "{}"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 35
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:30.759Z",
+      "testId": "TC-REG-034",
+      "title": "TC-REG-034: Non-JSON content type",
+      "severity": "CRITICAL",
+      "expected": 400,
+      "actual": 200,
+      "requestPayload": {
+        "Content-Type": "text/plain",
+        "Body": "name=A&email=a@b.co&password=pass"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 36
+      },
+      "gapRef": "REG: Registration validation gap"
+    },
+    {
+      "timestamp": "2026-06-28T18:17:30.768Z",
+      "testId": "TC-REG-035",
+      "title": "TC-REG-035: Concurrent duplicate registration",
+      "severity": "CRITICAL",
+      "expected": 201,
+      "actual": 200,
+      "requestPayload": {
+        "name": "Race User",
+        "email": "race@test.com",
+        "password": "pass123"
+      },
+      "responseBody": {
+        "message": "User registered successfully",
+        "id": 37
+      },
+      "gapRef": "REG: Registration validation gap"
+    }
+  ],
+  "failedAssertions": [
+    {
+      "title": "TC-REG-004 — TC-REG-004: Duplicate email — seeded admin",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-004] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":4}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-001 — TC-REG-001: Happy path — valid full registration",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-001] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":3}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-002 — TC-REG-002: Happy path — minimal required fields only",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-002] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":5}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-003 — TC-REG-003: Role defaults to 'user' when omitted",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-003] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":8}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-006 — TC-REG-006: Duplicate email — self-registered",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-006] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":6}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-005 — TC-REG-005: Duplicate email — seeded user",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-005] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":7}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-008 — TC-REG-008: Missing password field",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-008] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":9}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-007 — TC-REG-007: Missing email field",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-007] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":10}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-010 — TC-REG-010: Empty string password",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-010] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":11}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-009 — TC-REG-009: Empty string email",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-009] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":12}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-015 — TC-REG-015: Email with no local part",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-015] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":14}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-013 — TC-REG-013: Email without @ symbol",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-013] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":13}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-012 — TC-REG-012: Password = null",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-012] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":15}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-011 — TC-REG-011: Email = null",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-011] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":16}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-016 — TC-REG-016: Email at RFC min length (6 chars)",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-016] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":17}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-014 — TC-REG-014: Email with no domain",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-014] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":18}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-017 — TC-REG-017: Email at 254 chars (RFC max)",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-017] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":19}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-018 — TC-REG-018: Email at 255 chars (RFC max + 1)",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-018] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":21}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-019 — TC-REG-019: Password = 1 character (Min)",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-019] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":20}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-023 — TC-REG-023: Name = 1 character (Min)",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-023] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":22}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-020 — TC-REG-020: Password = 1000 chars (stress Max)",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-020] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":23}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-022 — TC-REG-022: Name = null",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-022] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":24}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-024 — TC-REG-024: Name = 500 chars (stress)",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-024] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":25}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-021 — TC-REG-021: Name = empty string",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-021] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":26}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-025 — TC-REG-025: Role omitted to defaults to user",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-025] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":27}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-026 — TC-REG-026: Role = user explicitly",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-026] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":28}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-027 — TC-REG-027: Mass assignment — role = admin",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-027] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":29}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-028 — TC-REG-028: Role = invalid enum value",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-028] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":30}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-030 — TC-REG-030: Phone = valid nominal",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-030] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":31}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-029 — TC-REG-029: Phone optional — omitted",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-029] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":32}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-031 — TC-REG-031: Phone = non-numeric string",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-031] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":33}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-032 — TC-REG-032: Shipping address optional — omitted",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-032] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":34}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-033 — TC-REG-033: Empty request body {}",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-033] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":35}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-034 — TC-REG-034: Non-JSON content type",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-034] Expected status 400 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":36}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-REG-035 — TC-REG-035: Concurrent duplicate registration",
+      "file": "tests\\reg.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-REG-035] Expected status 201 but got 200. Body: {\"message\":\"User registered successfully\",\"id\":37}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    }
+  ]
+}

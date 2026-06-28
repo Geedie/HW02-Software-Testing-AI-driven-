@@ -1,0 +1,431 @@
+{
+  "runId": "2026-06-28T18-52-44-722Z",
+  "generatedAt": "2026-06-28T18:52:44.722Z",
+  "summary": {
+    "explicitBugCount": 0,
+    "failedAssertionCount": 60
+  },
+  "explicitBugs": [],
+  "failedAssertions": [
+    {
+      "title": "TC-IMPORT-001 — TC-IMPORT-001: Happy path — single valid product, all fields",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-001] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-002 — TC-IMPORT-002: Happy path — 5 valid products",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-002] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-003 — TC-IMPORT-003: Products = empty array []",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-003] Expected status 400 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-004 — TC-IMPORT-004: Products = null",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-004] Expected status 400 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-005 — TC-IMPORT-005: Products key missing entirely",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-005] Expected status 400 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-006 — TC-IMPORT-006: Products = string",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-006] Expected status 400 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-007 — TC-IMPORT-007: Products = object {}",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-007] Expected status 400 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-008 — TC-IMPORT-008: Products = integer 1",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-008] Expected status 400 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-009 — TC-IMPORT-009: Products = 1 item (Min)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-009] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-010 — TC-IMPORT-010: Products = 2 items (Min+1)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-010] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-011 — TC-IMPORT-011: Products = 1000 items (stress)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-011] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-012 — TC-IMPORT-012: Products array contains null element",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-012] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-013 — TC-IMPORT-013: Products array of primitives",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-013] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-014 — TC-IMPORT-014: No Authorization header",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-014] Expected status 401 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-015 — TC-IMPORT-015: Regular user token (non-admin)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-015] Expected status 403 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-016 — TC-IMPORT-016: Empty request body",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-016] Expected status 400 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-017 — TC-IMPORT-017: Malformed JSON body",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-017] Expected status 400 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-018 — TC-IMPORT-018: name missing — single row",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-018] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-019 — TC-IMPORT-019: name = null",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-019] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-020 — TC-IMPORT-020: name = empty string",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-020] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-021 — TC-IMPORT-021: name = \"A\" (1 char)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-021] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-022 — TC-IMPORT-022: name = \"AB\" (2 chars)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-022] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-023 — TC-IMPORT-023: name = 255-character string",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-023] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-024 — TC-IMPORT-024: name = 1000-character string",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-024] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-025 — TC-IMPORT-025: name = spaces only",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-025] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-026 — TC-IMPORT-026: name = \"0\"",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-026] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-027 — TC-IMPORT-027: name = integer type 12345",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-027] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-028 — TC-IMPORT-028: Mixed batch — 1 valid + 1 missing name",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-028] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-029 — TC-IMPORT-029: Mixed batch - first row missing name",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-029] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-030 — TC-IMPORT-030: All rows missing name",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-030] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-031 — TC-IMPORT-031: Vietnamese Unicode name",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-031] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-032 — TC-IMPORT-032: Emoji in name",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-032] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-033 — TC-IMPORT-033: price = 1 (Min)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-033] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-034 — TC-IMPORT-034: price = 0 (zero boundary)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-034] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-035 — TC-IMPORT-035: price = -1 (negative)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-035] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-036 — TC-IMPORT-036: price = -99999 (large negative)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-036] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-037 — TC-IMPORT-037: price = 2147483647 (INT32 Max)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-037] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-038 — TC-IMPORT-038: price = 2147483648 (INT32 Max+1)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-038] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-039 — TC-IMPORT-039: price = 99.99 (float)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-039] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-040 — TC-IMPORT-040: price = \"150000\" (string)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-040] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-041 — TC-IMPORT-041: price = null",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-041] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-042 — TC-IMPORT-042: price missing",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-042] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-043 — TC-IMPORT-043: category_id missing → default 1",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-043] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-044 — TC-IMPORT-044: category_id = null -> default 1",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-044] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-045 — TC-IMPORT-045: category_id = 0 -> default 1 (falsy bug)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-045] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-046 — TC-IMPORT-046: category_id = 1 (explicit)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-046] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-047 — TC-IMPORT-047: category_id = 2 (valid FK)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-047] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-048 — TC-IMPORT-048: category_id = 9999 (non-existent FK)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-048] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-049 — TC-IMPORT-049: category_id = -1 (negative)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-049] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-050 — TC-IMPORT-050: category_id = empty string",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-050] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-051 — TC-IMPORT-051: category_id = \"1\" (string)",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-051] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-052 — TC-IMPORT-052: description missing -> default \"\"",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-052] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-053 — TC-IMPORT-053: description = null -> default \"\"",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-053] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-054 — TC-IMPORT-054: description = \"Valid description\"",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-054] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-055 — TC-IMPORT-055: imageUrl missing -> default \"\"",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-055] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-056 — TC-IMPORT-056: imageUrl = null -> default \"\"",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-056] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-057 — TC-IMPORT-057: imageUrl = valid URL",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-057] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-058 — TC-IMPORT-058: imageUrl = non-URL string",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-058] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-059 — TC-IMPORT-059: Minimal row - name only",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-059] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    },
+    {
+      "title": "TC-IMPORT-060 — TC-IMPORT-060: Concurrent import - same product names",
+      "file": "tests\\import.api.spec.cjs",
+      "status": "failed",
+      "error": "Error: [TC-IMPORT-060] Expected status 200 but got 404. Body: <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/import</pre>\n</body>\n</html>\n\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+      "retries": 0
+    }
+  ]
+}

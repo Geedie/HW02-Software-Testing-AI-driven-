@@ -1,0 +1,16 @@
+{
+  "name": "bva-playwright-suite",
+  "version": "1.0.0",
+  "description": "Automated BVA/Domain-Testing suite for E-Shop (REG/CHECKOUT/IMPORT/OSM) via Playwright",
+  "type": "commonjs",
+  "scripts": {
+    "test": "playwright test --project=api",
+    "test:reg": "playwright test --project=api tests/reg.api.spec.cjs",
+    "test:reg:web": "playwright test --project=web-e2e tests/reg.web.spec.cjs --headed",
+    "report": "playwright show-report test/test_runs/html-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "dotenv": "^16.4.5"
+  }
+}
