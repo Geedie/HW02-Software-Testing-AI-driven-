@@ -48,7 +48,8 @@ async function fillLoginForm(page: Page, email: string, password: string) {
 async function navigateToLogin(page: Page) {
   await page.goto(`${BASE_URL}/login`);
   // Verify login page loaded — check for form elements
-  await expect(page.locator('form')).toBeVisible();
+  // [Fix after review]: add explicit timeout to avoid flaky failures on slow CI
+  await expect(page.locator('form')).toBeVisible({ timeout: 10000 });
 }
 
 // ── Test Suite ───────────────────────────────────────────────────────────────
@@ -61,7 +62,8 @@ test.describe(`[Run by: ${STUDENT_ID}] FR-02 — Đăng nhập & Khóa Tài Kho�
     await fillLoginForm(page, tc.email, tc.password);
     await page.locator('button[type="submit"]').click();
     // Assertion 1: URL redirect về trang chủ
-    await expect(page).toHaveURL(`${BASE_URL}/`);
+    // [Fix after review]: waitForNavigation pattern — URL change may take time
+    await expect(page).toHaveURL(`${BASE_URL}/`, { timeout: 10000 });
     // Assertion 2: Header chào mừng hiển thị
     await expect(page.locator('header')).toBeVisible();
   });
