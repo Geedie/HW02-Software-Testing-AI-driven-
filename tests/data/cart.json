@@ -1,0 +1,114 @@
+{
+  "validUser": {
+    "email": "test@eshop.com",
+    "password": "Test1234!"
+  },
+  "products": [
+    {
+      "id": 1,
+      "name": "iPhone 15 Pro Max",
+      "price": 29990000,
+      "quantity": 1
+    },
+    {
+      "id": 4,
+      "name": "Tai nghe AirPods Pro 2",
+      "price": 5990000,
+      "quantity": 2
+    }
+  ],
+  "testCases": [
+    {
+      "caseId": "TC_CART_01",
+      "type": "positive",
+      "description": "Giỏ hàng trống khi chưa thêm sản phẩm nào",
+      "action": "view_empty_cart",
+      "expectedResult": "Giỏ hàng của bạn đang trống"
+    },
+    {
+      "caseId": "TC_CART_02",
+      "type": "positive",
+      "description": "Thêm sản phẩm vào giỏ từ trang chi tiết",
+      "action": "add_to_cart",
+      "productId": 1,
+      "productName": "iPhone 15 Pro Max",
+      "expectedResult": "product_in_cart"
+    },
+    {
+      "caseId": "TC_CART_03",
+      "type": "positive",
+      "description": "Giỏ hàng hiển thị đúng thông tin: tên, giá, số lượng, thành tiền",
+      "action": "verify_cart_columns",
+      "expectedResult": "columns_visible"
+    },
+    {
+      "caseId": "TC_CART_04",
+      "type": "positive",
+      "description": "Tổng tiền giỏ hàng tính đúng sau khi thêm 1 sản phẩm",
+      "action": "verify_total",
+      "productId": 1,
+      "quantity": 1,
+      "expectedResult": "correct_total"
+    },
+    {
+      "caseId": "TC_CART_05",
+      "type": "positive",
+      "description": "Thêm cùng một sản phẩm hai lần — số lượng tăng, không tạo dòng mới",
+      "action": "add_same_product_twice",
+      "productId": 1,
+      "expectedResult": "quantity_increases"
+    },
+    {
+      "caseId": "TC_CART_06",
+      "type": "positive",
+      "description": "Nút Tiếp tục mua sắm điều hướng về trang chủ",
+      "action": "continue_shopping",
+      "expectedResult": "navigate_home"
+    },
+    {
+      "caseId": "TC_CART_07",
+      "type": "positive",
+      "description": "Nút Tiến hành thanh toán khi đã đăng nhập chuyển đến trang checkout",
+      "action": "checkout_logged_in",
+      "expectedResult": "navigate_checkout"
+    },
+    {
+      "caseId": "TC_CART_08",
+      "type": "negative",
+      "description": "Nút Tiến hành thanh toán khi chưa đăng nhập -> yêu cầu đăng nhập",
+      "action": "checkout_not_logged_in",
+      "expectedResult": "redirect_login"
+    },
+    {
+      "caseId": "TC_CART_09",
+      "type": "negative",
+      "description": "Xóa sản phẩm khỏi giỏ hàng",
+      "action": "remove_product",
+      "productId": 1,
+      "expectedResult": "product_removed"
+    },
+    {
+      "caseId": "TC_CART_10",
+      "type": "negative",
+      "description": "Xóa sản phẩm cuối cùng -> giỏ hàng trống",
+      "action": "remove_last_product",
+      "expectedResult": "cart_empty_state"
+    },
+    {
+      "caseId": "TC_CART_11",
+      "type": "edge",
+      "description": "Kiểm tra nhãn tổng tiền (theo FR-07 phải là 'Tổng cộng')",
+      "action": "verify_total_label",
+      "expectedResult": "Tổng cộng",
+      "bugExpected": true
+    },
+    {
+      "caseId": "TC_CART_12",
+      "type": "edge",
+      "description": "Kiểm tra dialog xác nhận khi xóa sản phẩm khỏi giỏ",
+      "action": "verify_delete_confirmation",
+      "expectedResult": "confirmation_dialog",
+      "bugExpected": true
+    }
+  ]
+}
