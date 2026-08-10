@@ -1,0 +1,42 @@
+[
+  {
+    "test_case_id": "TC01",
+    "test_name": "Valid Test User Login",
+    "email": "test@eshop.com",
+    "password": "Test1234!",
+    "expected_status": 200,
+    "check_token": true
+  },
+  {
+    "test_case_id": "TC02",
+    "test_name": "Valid Admin User Login",
+    "email": "admin@eshop.com",
+    "password": "Admin123!",
+    "expected_status": 200,
+    "check_token": true
+  },
+  {
+    "test_case_id": "TC03",
+    "test_name": "Invalid Password Attempt",
+    "email": "test@eshop.com",
+    "password": "WrongPassword123!",
+    "expected_status": 401,
+    "check_token": false
+  },
+  {
+    "test_case_id": "TC04",
+    "test_name": "Unregistered Email Account",
+    "email": "nonexistent@eshop.com",
+    "password": "Test1234!",
+    "expected_status": 401,
+    "check_token": false
+  },
+  {
+    "test_case_id": "TC05",
+    "test_name": "SQL Injection Attack Payload",
+    "email": "admin' OR '1'='1",
+    "password": "anything",
+    "expected_status": 401,
+    "check_token": false
+  }
+]

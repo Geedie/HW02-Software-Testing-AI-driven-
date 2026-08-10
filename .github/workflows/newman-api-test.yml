@@ -1,0 +1,55 @@
+name: Newman API Tests CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  api-tests:
+    name: Run Newman API Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          npm install
+
+      - name: Start Backend Server Provider
+        run: |
+          cd backend
+          node server.js &
+          sleep 3
+
+      - name: Verify Provider Server Health
+        run: |
+          curl --retry 5 --retry-delay 2 --retry-connrefused http://localhost:3000/api/products/1
+
+      - name: Install Newman CLI
+        run: |
+          npm install -g newman
+
+      - name: Execute Newman Collection Tests (Data-driven)
+        run: |
+          newman run mini-login.postman_collection.json \
+            -e mini-local.postman_environment.json \
+            -d mini-login.data.json \
+            -r cli,json \
+            --reporter-json-export mini-newman-report.json
+
+      - name: Upload Newman Test Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-test-report
+          path: mini-newman-report.json
