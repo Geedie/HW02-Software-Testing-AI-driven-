@@ -53,12 +53,14 @@ async function loginAsUser(page: Page) {
 
 async function addProductToCart(page: Page, productId: number) {
   await page.goto(`${BASE_URL}/product/${productId}`);
-  await page.waitForSelector('button.bug-mobile-hidden, button:has-text("Thêm vào giỏ")');
+  // [Fix after review]: use { state: 'visible' } instead of raw waitForSelector
+  // AI generated: waitForSelector without state option - may resolve before element is interactive
+  await page.waitForSelector('button.bug-mobile-hidden, button:has-text("Thêm vào giỏ")', { state: 'visible', timeout: 10000 });
   const addBtn = page.locator('button.bug-mobile-hidden, button:has-text("Thêm vào giỏ")').first();
   await expect(addBtn).toBeVisible();
+  // [Fix after review]: removed double-click anti-pattern; use single click with waitFor
   await addBtn.click();
-  await addBtn.click(); // click twice (intentional: frontend ignores first click)
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(300);
 }
 
 async function clearCartViaReload(page: Page) {
