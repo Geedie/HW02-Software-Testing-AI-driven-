@@ -1,0 +1,12 @@
+[
+  {
+    "query": "iPhone",
+    "expectedName": "iPhone 15 Pro Max",
+    "expectedId": 1
+  },
+  {
+    "query": "AirPods",
+    "expectedName": "Tai nghe AirPods Pro 2",
+    "expectedId": 4
+  }
+]
