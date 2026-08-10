@@ -39,15 +39,17 @@ const categoryData = JSON.parse(fs.readFileSync(dataPath, 'utf-8')) as {
 // ── Helper ──────────────────────────────────────────────────────────────────
 async function loginAdmin(page: Page) {
   await page.goto(`${ADMIN_URL}/`);
-  await page.waitForTimeout(500);
+  // [Fix after review]: use networkidle instead of waitForTimeout(500) — more reliable
+  await page.waitForLoadState('networkidle');
   const emailInput = page.locator('input[placeholder="Email"]');
   const passwordInput = page.locator('input[placeholder="Password"]');
-  await expect(emailInput).toBeVisible();
+  await expect(emailInput).toBeVisible({ timeout: 10000 });
   await emailInput.fill(categoryData.adminCredentials.email);
   await passwordInput.fill(categoryData.adminCredentials.password);
   await page.locator('button:has-text("Login")').click();
-  // Chờ dashboard load
-  await expect(page.locator('h1:has-text("EShop Admin")')).toBeVisible({ timeout: 5000 });
+  // [Fix after review]: increase timeout from 5000 to 10000 for slower environments
+  // AI generated 5000ms which is too short for initial admin panel load
+  await expect(page.locator('h1:has-text("EShop Admin")')).toBeVisible({ timeout: 10000 });
 }
 
 async function navigateToCategories(page: Page) {
