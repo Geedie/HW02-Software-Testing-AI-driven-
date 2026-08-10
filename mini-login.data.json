@@ -4,7 +4,7 @@
     "test_name": "Valid Test User Login",
     "email": "test@eshop.com",
     "password": "Test1234!",
-    "expected_status": 200,
+    "expected_status": 999,
     "check_token": true
   },
   {
