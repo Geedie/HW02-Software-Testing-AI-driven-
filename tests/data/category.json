@@ -1,0 +1,100 @@
+{
+  "adminCredentials": {
+    "email": "admin@eshop.com",
+    "password": "Admin123!"
+  },
+  "testCases": [
+    {
+      "caseId": "TC_CAT_01",
+      "type": "positive",
+      "description": "Đăng nhập Admin và điều hướng đến tab Danh mục",
+      "action": "navigate_to_categories",
+      "expectedResult": "tab_visible"
+    },
+    {
+      "caseId": "TC_CAT_02",
+      "type": "positive",
+      "description": "Danh sách danh mục được hiển thị với các cột ID và Tên",
+      "action": "view_categories_table",
+      "expectedResult": "table_with_columns"
+    },
+    {
+      "caseId": "TC_CAT_03",
+      "type": "positive",
+      "description": "Thêm danh mục mới với tên hợp lệ",
+      "action": "add_category",
+      "categoryName": "Danh mục Test Auto 001",
+      "expectedResult": "category_added"
+    },
+    {
+      "caseId": "TC_CAT_04",
+      "type": "positive",
+      "description": "Danh mục vừa thêm xuất hiện trong bảng danh sách",
+      "action": "verify_category_in_list",
+      "categoryName": "Danh mục Test Auto 001",
+      "expectedResult": "category_visible"
+    },
+    {
+      "caseId": "TC_CAT_05",
+      "type": "positive",
+      "description": "Thêm danh mục thứ 2 với tên khác nhau",
+      "action": "add_category",
+      "categoryName": "Danh mục Test Auto 002",
+      "expectedResult": "category_added"
+    },
+    {
+      "caseId": "TC_CAT_06",
+      "type": "positive",
+      "description": "Xóa danh mục vừa tạo khỏi hệ thống",
+      "action": "delete_category",
+      "categoryName": "Danh mục Test Auto 002",
+      "expectedResult": "category_deleted"
+    },
+    {
+      "caseId": "TC_CAT_07",
+      "type": "positive",
+      "description": "Sau khi xóa, danh mục không còn trong danh sách",
+      "action": "verify_category_deleted",
+      "categoryName": "Danh mục Test Auto 002",
+      "expectedResult": "not_in_list"
+    },
+    {
+      "caseId": "TC_CAT_08",
+      "type": "positive",
+      "description": "Input tên danh mục được reset về rỗng sau khi thêm thành công",
+      "action": "verify_input_cleared",
+      "expectedResult": "input_empty"
+    },
+    {
+      "caseId": "TC_CAT_09",
+      "type": "negative",
+      "description": "Thêm danh mục với tên trống — hệ thống không được cho phép",
+      "action": "add_empty_category",
+      "categoryName": "",
+      "expectedResult": "submission_prevented"
+    },
+    {
+      "caseId": "TC_CAT_10",
+      "type": "negative",
+      "description": "Người dùng thường (non-admin) không thể truy cập trang Admin",
+      "action": "non_admin_access",
+      "expectedResult": "access_denied"
+    },
+    {
+      "caseId": "TC_CAT_11",
+      "type": "edge",
+      "description": "Thêm danh mục với tên chứa ký tự đặc biệt",
+      "action": "add_category",
+      "categoryName": "Điện tử & Công nghệ #1",
+      "expectedResult": "category_added"
+    },
+    {
+      "caseId": "TC_CAT_12",
+      "type": "edge",
+      "description": "Thêm danh mục với tên rất dài (100 ký tự)",
+      "action": "add_category",
+      "categoryName": "Danh mục với tên rất dài để kiểm tra giới hạn độ dài của trường nhập liệu trong hệ thống quản",
+      "expectedResult": "handled_gracefully"
+    }
+  ]
+}
