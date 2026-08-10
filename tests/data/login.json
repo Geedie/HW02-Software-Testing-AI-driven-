@@ -1,0 +1,107 @@
+[
+  {
+    "caseId": "TC_LOGIN_01",
+    "type": "positive",
+    "description": "Đăng nhập thành công với tài khoản hợp lệ",
+    "email": "test@eshop.com",
+    "password": "Test1234!",
+    "expectedResult": "success",
+    "expectedUrl": "/"
+  },
+  {
+    "caseId": "TC_LOGIN_02",
+    "type": "positive",
+    "description": "Đăng nhập thành công với tài khoản admin",
+    "email": "admin@eshop.com",
+    "password": "Admin123!",
+    "expectedResult": "success",
+    "expectedUrl": "/"
+  },
+  {
+    "caseId": "TC_LOGIN_03",
+    "type": "negative",
+    "description": "Đăng nhập thất bại với mật khẩu sai",
+    "email": "test@eshop.com",
+    "password": "WrongPass!",
+    "expectedResult": "failure",
+    "expectedErrorText": "Đăng nhập thất bại"
+  },
+  {
+    "caseId": "TC_LOGIN_04",
+    "type": "negative",
+    "description": "Đăng nhập thất bại với email không tồn tại",
+    "email": "notexist@eshop.com",
+    "password": "Test1234!",
+    "expectedResult": "failure",
+    "expectedErrorText": "Đăng nhập thất bại"
+  },
+  {
+    "caseId": "TC_LOGIN_05",
+    "type": "negative",
+    "description": "Đăng nhập thất bại khi để trống cả email và mật khẩu",
+    "email": "",
+    "password": "",
+    "expectedResult": "validation_error"
+  },
+  {
+    "caseId": "TC_LOGIN_06",
+    "type": "negative",
+    "description": "Đăng nhập thất bại khi để trống email",
+    "email": "",
+    "password": "Test1234!",
+    "expectedResult": "validation_error"
+  },
+  {
+    "caseId": "TC_LOGIN_07",
+    "type": "negative",
+    "description": "Đăng nhập thất bại khi để trống mật khẩu",
+    "email": "test@eshop.com",
+    "password": "",
+    "expectedResult": "validation_error"
+  },
+  {
+    "caseId": "TC_LOGIN_08",
+    "type": "negative",
+    "description": "Đăng nhập thất bại với mật khẩu sai lần 2",
+    "email": "test@eshop.com",
+    "password": "WrongPass2!",
+    "expectedResult": "failure",
+    "expectedErrorText": "Đăng nhập thất bại"
+  },
+  {
+    "caseId": "TC_LOGIN_09",
+    "type": "edge",
+    "description": "Kiểm tra link Quên mật khẩu tồn tại và điều hướng đúng",
+    "email": "",
+    "password": "",
+    "expectedResult": "link_visible",
+    "expectedUrl": "/forgot-password"
+  },
+  {
+    "caseId": "TC_LOGIN_10",
+    "type": "edge",
+    "description": "Kiểm tra link Đăng ký tồn tại",
+    "email": "",
+    "password": "",
+    "expectedResult": "link_visible",
+    "expectedUrl": "/register"
+  },
+  {
+    "caseId": "TC_LOGIN_11",
+    "type": "edge",
+    "description": "Đăng nhập với email chứa khoảng trắng thừa",
+    "email": "  test@eshop.com  ",
+    "password": "Test1234!",
+    "expectedResult": "failure",
+    "expectedErrorText": "Đăng nhập thất bại"
+  },
+  {
+    "caseId": "TC_LOGIN_12",
+    "type": "edge",
+    "description": "Đăng nhập với mật khẩu phân biệt hoa thường (sai case)",
+    "email": "test@eshop.com",
+    "password": "test1234!",
+    "expectedResult": "failure",
+    "expectedErrorText": "Đăng nhập thất bại"
+  }
+]
