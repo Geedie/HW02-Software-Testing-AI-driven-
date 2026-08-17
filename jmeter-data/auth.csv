@@ -1,0 +1,6 @@
+email,password
+test@eshop.com,Test1234!
+admin@eshop.com,Admin123!
+test@eshop.com,WrongPass1
+test@eshop.com,WrongPass2
+admin@eshop.com,WrongPass3
