@@ -50,4 +50,7 @@ If testing auth endpoints with lockout security rules (e.g. 3 failed attempts lo
 When evaluating `.jtl` raw logs with AI assistants:
 1. **Never rely on surface averages**: Always inspect P95/P99 latency and exact HTTP response codes.
 2. **Verify Error Types**: Differentiate between functional business errors (HTTP 403 Lockout) and infrastructure failures (HTTP 500, Connection Reset).
-3. **Validate Recommendations**: Classify suggested optimizations as **Feasible** (e.g., SQLite WAL mode, database indexing) vs **Hallucinated** (e.g., unnecessary K8s autoscaling for single-threaded local SQLite).
+### 4. Skill Demonstration Video
+Watch the end-to-end demonstration video of this skill in action:
+- **YouTube Link**: [https://youtu.be/MOwQ-KHwVm0](https://youtu.be/MOwQ-KHwVm0)
+

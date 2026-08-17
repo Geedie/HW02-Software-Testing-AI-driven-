@@ -5,6 +5,7 @@
 **Ứng dụng kiểm thử (SUT)**: EShop RESTful API Backend Node.js + SQLite  
 **Public GitHub Repository**: [https://github.com/Geedie/HW02-Software-Testing-AI-driven-](https://github.com/Geedie/HW02-Software-Testing-AI-driven-)  
 **Branch HW05**: [https://github.com/Geedie/HW02-Software-Testing-AI-driven-/tree/performance-testing-Xuan](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/tree/performance-testing-Xuan)  
+**Demo Video (YouTube Unlisted)**: [https://youtu.be/MOwQ-KHwVm0](https://youtu.be/MOwQ-KHwVm0)  
 
 ---
 
