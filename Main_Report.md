@@ -15,7 +15,7 @@
 | **Bộ nhớ (RAM)** | 16 GB DDR4 |
 | **Môi trường chạy Backend** | Node.js v20+, Express.js, SQLite3 |
 | **Công cụ kiểm thử** | Apache JMeter 5.6.3 (Non-GUI / CLI Mode) |
-| **Công cụ theo dõi tài nguyên** | Windows Task Manager (Processes & Performance Tab) |
+| **Công cụ theo dõi tài nguyên** | Windows Task Manager (Processes & Performance Tab) / Resource Monitor |
 
 ---
 
@@ -123,20 +123,27 @@ flowchart TD
 
 ## 5. Phụ Lục A — AI Audit Report (Mandatory)
 
-Tôi khai báo có sử dụng công cụ AI (Gemini / ChatGPT) hỗ trợ trong các tác vụ sau:
+*(Chi tiết xem tại tập tin riêng: [AI_Audit_Report.md](file:///c:/Users/Admin/Documents/Ki%E1%BB%83m%20th%E1%BB%AD%20ph%E1%BA%A7n%20m%E1%BB%81m/HW05/HW02-Software-Testing-AI-driven-/AI_Audit_Report.md))*
 
-1. **Công cụ AI**: Gemini 1.5 Pro / Claude 3.5 Sonnet
-2. **Ngày giờ**: 07/08/2026
-3. **Prompt mẫu đã sử dụng**:
-   > *"Hãy phân tích file log kết quả JMeter .jtl của kịch bản Stress Test đăng nhập EShop, giải thích nguyên nhân gây ra Error Rate 99.88% và đề xuất giải pháp tối ưu DB SQLite."*
-4. **Kết quả AI trả về**: Trả về phân tích tổng quan, gợi ý bật SQLite WAL mode và đề xuất tăng RAM server.
+Tôi khai báo có sử dụng công cụ AI (Gemini / Antigravity) hỗ trợ trong quá trình thực hiện bài tập HW05 với các tương tác chính:
+- **Tương tác 1**: Thiết kế kịch bản & tham số (Virtual users, Ramp-up, Think-time).
+- **Tương tác 2**: Phân tích file log thô `.jtl` và Săn lỗi AI phân tích sai (Misinterpretation Hunt).
+- **Tương tác 3**: Phân loại tính khả thi các đề xuất tối ưu hiệu năng.
+- **Tương tác 4**: Thiết kế sơ đồ CI/CD Pipeline (Mermaid) & Đóng gói Agent Skill.
 
 ---
 
 ## 6. Phụ Lục B — AI Critique (200 – 300 words, Mandatory)
 
-Trong quá trình hợp tác với AI thực hiện bài tập HW05, tôi nhận thấy AI thể hiện khả năng rất tốt trong việc tạo cú pháp kịch bản JMeter `.jmx` và viết các đoạn mã bổ trợ nhanh chóng. Tuy nhiên, AI bộc lộ những điểm yếu cố hữu khi phân tích dữ liệu thực nghiệm thực tế từ các file log `.jtl`. 
+*(Chi tiết xem tại tập tin riêng: [AI_Critique.md](file:///c:/Users/Admin/Documents/Ki%E1%BB%83m%20th%E1%BB%AD%20ph%E1%BA%A7n%20m%E1%BB%81m/HW05/HW02-Software-Testing-AI-driven-/AI_Critique.md))*
 
-Cụ thể, AI thường rơi vào bẫy "nhìn bề ngoài chỉ số" (Surface Metrics Bias). Khi thấy tỷ lệ lỗi Stress Test đạt 99.88%, AI ngay lập tức đưa ra giả định rằng hệ thống bị quá tải hoặc quá trình dịch vụ Node.js bị đứt gãy (crash), mà hoàn toàn không phân tích các thông điệp lỗi HTTP 403 mang tính nghiệp vụ bảo mật (Account Lockout) của ứng dụng SUT. Ngoài ra, AI có xu hướng trung bình hóa dữ liệu, dễ dàng bỏ qua các đỉnh trễ (Latency Spikes) nguy hiểm ở P95/P99 - nơi trực tiếp ảnh hưởng đến trải nghiệm người dùng cuối. AI cũng thường xuyên đưa ra các giải pháp tối ưu "học thuộc lòng" mang tính ảo tưởng như tư vấn hạ tầng Kubernetes cho một ứng dụng SQLite đơn giản.
+Trong quá trình thực hiện bài tập HW05 – Performance Testing, tôi đã sử dụng công cụ AI (Gemini / Antigravity) hỗ trợ tạo cú pháp kịch bản JMeter (`.jmx`), thiết kế dữ liệu đầu vào CSV và phân tích các tập tin log thô (`.jtl`). Nhìn chung, AI thể hiện khả năng vượt trội trong việc khởi tạo cú pháp XML/JMX, cấu hình các thành phần Listener và tự động hóa quy trình chạy CLI. Tuy nhiên, AI bộc lộ những hạn hạn chế cố hữu nghiêm trọng khi phân tích dữ liệu thực nghiệm.
 
-Bài học quan trọng nhất mà tôi rút ra khi làm việc với AI là: **AI chỉ là công cụ hỗ trợ tốc độ, con người phải giữ vai trò kiểm duyệt và chịu trách nhiệm về tính đúng đắn**. Không bao giờ được chấp nhận trực tiếp các nhận định của AI mà không đối soát với bằng chứng thực nghiệm (Empirical Logs) và hiểu biết sâu sắc về kiến trúc ứng dụng SUT.
+**Điểm AI làm sai hoặc bỏ sót:** 
+Cụ thể, AI rơi vào bẫy "nhìn bề ngoài chỉ số" (Surface Metrics Bias). Khi phân tích log Stress Test với Error Rate 99.88%, AI vội vàng kết luận server Node.js bị đứt gãy (crash) hoặc tràn bộ nhớ RAM (OOM), trong khi thực tế server vẫn hoạt động bình thường và phản hồi HTTP 403 Forbidden mang tính nghiệp vụ bảo mật (Account Lockout). Ngoài ra, AI có xu hướng trung bình hóa dữ liệu (Average Bias), bỏ qua đỉnh trễ 1,770ms ở P95/P99 tại API Checkout. AI cũng đưa ra các đề xuất tối ưu "học thuộc lòng" mang tính ảo tưởng như hạ tầng Kubernetes autoscaling cho một ứng dụng SQLite đơn giản.
+
+**Tại sao AI bỏ sót:** 
+Các sai sót này xuất phát từ việc AI hoạt động theo cơ chế khớp mẫu (pattern matching) từ dữ liệu huấn luyện công khai, thiếu khả năng truy vết nguyên nhân gốc rễ (root cause analysis) từ nội dung response body. AI không thực sự thấu hiểu kiến trúc ứng dụng SUT mà chỉ nhìn vào các con số thống kê tổng hợp.
+
+**Bài học quan trọng:** 
+Bài học cốt lõi tôi rút ra khi hợp tác với AI là: *AI là công cụ tăng tốc độ thực thi, con người phải giữ vai trò kiểm duyệt thực nghiệm và chịu trách nhiệm về tính đúng đắn*. Không bao giờ được chấp nhận trực tiếp các nhận định của AI mà không đối soát với log thô (`.jtl`) và kiến trúc hệ thống thực tế.
