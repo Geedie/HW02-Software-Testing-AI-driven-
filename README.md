@@ -51,6 +51,9 @@
 - **ISSUE-02 (Cascading Lockout in Authentication)**: Tính năng khóa tài khoản dựa trên IP/User gây nghẽn dây chuyền làm toàn bộ request đăng nhập hợp lệ bị vô hiệu hóa trong 3 phút khi bị Stress Test.
 
 ### 2.4 Links & Tài Liệu Nộp Bài
+- **Public GitHub Repository**: [https://github.com/Geedie/HW02-Software-Testing-AI-driven-](https://github.com/Geedie/HW02-Software-Testing-AI-driven-)
+- **Branch HW05**: [https://github.com/Geedie/HW02-Software-Testing-AI-driven-/tree/performance-testing-Xuan](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/tree/performance-testing-Xuan)
 - **Demo Video (YouTube Unlisted)**: [https://youtu.be/demo_hw05_23127147](https://youtu.be/demo_hw05_23127147)
 - **Báo cáo chính**: `Main_Report.md` (chứa Task 1, Task 2, Task 3, AI Audit Report và AI Critique).
 - **Git commit log**: `git_commit_log.txt`
+

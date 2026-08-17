@@ -4,6 +4,8 @@
 **Môn học:** Kiểm thử Phần mềm  
 **Bài tập:** HW05 – Performance Testing  
 **Ngày nộp:** 2026-08-17  
+**Public GitHub Repository:** [https://github.com/Geedie/HW02-Software-Testing-AI-driven-](https://github.com/Geedie/HW02-Software-Testing-AI-driven-)  
+**Branch HW05:** [https://github.com/Geedie/HW02-Software-Testing-AI-driven-/tree/performance-testing-Xuan](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/tree/performance-testing-Xuan)  
 
 ---
 
