@@ -8,10 +8,10 @@
 ## 1. Cấu hình Pipeline (Pipeline Configuration)
 
 Hệ thống CI/CD được thiết lập tự động hóa bằng **GitHub Actions** thông qua file workflow:
-`.github/workflows/api-tests.yml`
+[.github/workflows/api-tests.yml](file:///c:/Users/Admin/Documents/Ki%E1%BB%83m%20th%E1%BB%AD%20ph%E1%BA%A7n%20m%E1%BB%81m/HW06/HW02-Software-Testing-AI-driven-/.github/workflows/api-tests.yml)
 
-### 🛠 Các bước trong Workflow:
-1. **Checkout Code:** Lấy mã nguồn mới nhất từ nhánh `main` / `master`.
+### 🛠 Các bước thực thi tự động trong Workflow:
+1. **Checkout Code:** Lấy mã nguồn mới nhất từ nhánh được push (`branches: [ "*" ]`).
 2. **Setup Node.js:** Thiết lập môi trường Node.js phiên bản 18.
 3. **Install Dependencies:** Chạy `npm install` trong thư mục `backend/` để cài đặt Express, SQLite3, JWT,...
 4. **Initialize Database:** Chạy `node database.js` khởi tạo CSDL SQLite với dữ liệu mẫu (Seeded data).
@@ -26,27 +26,28 @@ Hệ thống CI/CD được thiết lập tự động hóa bằng **GitHub Acti
 
 ## 2. Chi tiết 2 Pipeline Runs (Sample Pipeline Runs)
 
-Theo yêu cầu HW06, pipeline cần chứng minh 2 lần chạy (2 commits):
+Theo yêu cầu HW06, pipeline chứng minh 2 lần chạy thực tế trên GitHub Actions:
 
 ### 🟢 Run 1: All Tests Passing (Tất cả Test Cases thành công)
 - **Git Commit SHA:** `4d80c6fcc4071b52591b6daf1f9ae9d763e90b1e`
 - **Commit Link:** [Commit 4d80c6f](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/commit/4d80c6fcc4071b52591b6daf1f9ae9d763e90b1e)
-- **Trạng thái:** ✅ PASSED (Build Success)
-- **Mô tả:** Chạy toàn bộ 39 API requests với 62 assertions thành công 100%. Các bug được ghi nhận dưới dạng `console.log()` thay vì làm sập assertion.
+- **Trạng thái Build:** ✅ **PASSED (Build Success)**
+- **Mô tả:** Chạy toàn bộ 39 API requests với 62 assertions thành công. Các bug phát hiện được log dưới dạng `console.log()` mà không làm sập assertion.
 - **Link kết quả GitHub Actions Run 1:** [GitHub Actions Run 1 (PASSED)](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/actions/runs/32113355491)
+- **Hình ảnh chứng minh:**  
+  *(Vui lòng đính kèm Ảnh 1: Các step tick xanh & Ảnh 2: Khung Artifacts đã chụp ở trang Run 1)*
 
 ---
 
-## 🔴 Run 2: Failing Test Case (Có Test Case thất bại)
+### 🔴 Run 2: Failing Test Case (Có Test Case thất bại)
 - **Git Commit SHA:** `273971ec8e3984dcd7650f09806c9a35a4099411`
 - **Commit Link:** [Commit 273971e](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/commit/273971ec8e3984dcd7650f09806c9a35a4099411)
-- **Trạng thái:** ❌ FAILED (Build Failed)
+- **Trạng thái Build:** ❌ **FAILED (Build Failed)**
 - **Mô tả:** Cố tình thay đổi 1 assertion trong Postman Collection (`TC-API1-001` yêu cầu Status `500` thay vì `200`).
-- **Kết quả kỳ vọng:** Newman phát hiện 1 assertion failed → trả về exit code 1 → GitHub Actions đánh dấu workflow thất bại.
+- **Kết quả kỳ vọng:** Newman phát hiện 1 assertion failed ➜ trả về exit code 1 ➜ GitHub Actions đánh dấu workflow thất bại (Red).
 - **Link kết quả GitHub Actions Run 2:** [GitHub Actions Run 2 (FAILED)](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/actions/runs/32114672899)
-- **Link kết quả GitHub Actions:** `[Dán link GitHub Actions Run vào đây]`
-- **Hình ảnh minh họa:**
-  *(Dán screenshot bảng điều khiển GitHub Actions đỏ - Pipeline failed)*
+- **Hình ảnh chứng minh:**  
+  *(Vui lòng đính kèm Ảnh 3: Bảng điều khiển GitHub Actions báo màu đỏ FAILED)*
 
 ---
 
