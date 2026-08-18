@@ -70,7 +70,9 @@
                   "const json = pm.response.json();",
                   "if (json.token) {",
                   "    pm.collectionVariables.set('cart_user_token', json.token);",
+                  "    pm.environment.set('cart_user_token', json.token);",
                   "    pm.collectionVariables.set('user_id', json.user.id);",
+                  "    pm.environment.set('user_id', json.user.id);",
                   "    console.log('cart_user_token saved, user_id:', json.user.id);",
                   "}"
                 ]
@@ -98,7 +100,9 @@
                   "const json = pm.response.json();",
                   "if (json.token) {",
                   "    pm.collectionVariables.set('admin_token', json.token);",
+                  "    pm.environment.set('admin_token', json.token);",
                   "    pm.collectionVariables.set('user_token', json.token);",
+                  "    pm.environment.set('user_token', json.token);",
                   "    console.log('admin_token saved');",
                   "}"
                 ]
@@ -152,6 +156,7 @@
                   "const json = pm.response.json();",
                   "if (json.orderId) {",
                   "    pm.collectionVariables.set('order_id', json.orderId);",
+                  "    pm.environment.set('order_id', json.orderId);",
                   "    console.log('order_id saved:', json.orderId);",
                   "} else {",
                   "    console.log('WARNING: order_id not set!', JSON.stringify(json));",
