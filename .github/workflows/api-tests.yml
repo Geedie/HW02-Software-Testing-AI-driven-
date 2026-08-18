@@ -1,0 +1,88 @@
+name: HW06 API Tests - EShop (23127147)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  api-tests:
+    name: Run API Tests with Newman
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm install
+
+      - name: Initialize database
+        working-directory: ./backend
+        run: node database.js
+
+      - name: Start backend server
+        working-directory: ./backend
+        run: |
+          node server.js &
+          echo "SERVER_PID=$!" >> $GITHUB_ENV
+          sleep 3
+          echo "Backend server started"
+
+      - name: Wait for server to be ready
+        run: |
+          for i in {1..10}; do
+            if curl -s http://localhost:3000/api/products > /dev/null; then
+              echo "Server is ready!"
+              break
+            fi
+            echo "Waiting for server... attempt $i"
+            sleep 2
+          done
+
+      - name: Install Newman and reporters
+        run: npm install -g newman newman-reporter-htmlextra
+
+      - name: Run API Tests with Newman
+        id: newman
+        run: |
+          newman run postman/HW06_EShop_API_Tests.postman_collection.json \
+            --reporters cli,htmlextra,junit \
+            --reporter-htmlextra-export newman/newman-report-ci.html \
+            --reporter-junit-export newman/newman-results.xml \
+            --delay-request 500 \
+            --color on \
+            --bail
+        continue-on-error: true
+
+      - name: Upload Newman HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-report-${{ github.sha }}
+          path: newman/newman-report-ci.html
+
+      - name: Upload JUnit Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-junit-${{ github.sha }}
+          path: newman/newman-results.xml
+
+      - name: Stop server
+        if: always()
+        run: kill $SERVER_PID || true
+
+      - name: Check test results
+        if: steps.newman.outcome == 'failure'
+        run: |
+          echo "Some API tests failed - check the Newman report artifact"
+          exit 1
