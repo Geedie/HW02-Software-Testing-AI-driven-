@@ -43,7 +43,7 @@ Theo yêu cầu HW06, pipeline cần chứng minh 2 lần chạy (2 commits):
 - **Trạng thái:** ❌ FAILED (Build Failed)
 - **Mô tả:** Cố tình thay đổi 1 assertion trong Postman Collection (`TC-API1-001` yêu cầu Status `500` thay vì `200`).
 - **Kết quả kỳ vọng:** Newman phát hiện 1 assertion failed → trả về exit code 1 → GitHub Actions đánh dấu workflow thất bại.
-- **Link kết quả GitHub Actions Run 2:** [GitHub Actions Run 2 (FAILED)](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/actions/runs/32113941544)
+- **Link kết quả GitHub Actions Run 2:** [GitHub Actions Run 2 (FAILED)](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/actions/runs/32114672899)
 - **Link kết quả GitHub Actions:** `[Dán link GitHub Actions Run vào đây]`
 - **Hình ảnh minh họa:**
   *(Dán screenshot bảng điều khiển GitHub Actions đỏ - Pipeline failed)*
