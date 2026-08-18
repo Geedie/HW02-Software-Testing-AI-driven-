@@ -1,0 +1,51 @@
+[
+  {
+    "email": "test@eshop.com",
+    "password": "Test1234!",
+    "expected_status": 200,
+    "expected_role": "user",
+    "description": "Valid user login"
+  },
+  {
+    "email": "admin@eshop.com",
+    "password": "Admin123!",
+    "expected_status": 200,
+    "expected_role": "admin",
+    "description": "Valid admin login"
+  },
+  {
+    "email": "test@eshop.com",
+    "password": "WrongPassword",
+    "expected_status": 401,
+    "expected_role": null,
+    "description": "Wrong password"
+  },
+  {
+    "email": "notexist@eshop.com",
+    "password": "Test1234!",
+    "expected_status": 401,
+    "expected_role": null,
+    "description": "Non-existent email"
+  },
+  {
+    "email": "",
+    "password": "Test1234!",
+    "expected_status": 401,
+    "expected_role": null,
+    "description": "Empty email"
+  },
+  {
+    "email": "' OR '1'='1' --",
+    "password": "anything",
+    "expected_status": 401,
+    "expected_role": null,
+    "description": "SQL injection in email"
+  },
+  {
+    "email": "<script>alert(1)</script>@test.com",
+    "password": "anything",
+    "expected_status": 401,
+    "expected_role": null,
+    "description": "XSS in email"
+  }
+]

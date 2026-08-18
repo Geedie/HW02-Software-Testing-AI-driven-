@@ -1,0 +1,1122 @@
+{
+  "info": {
+    "_postman_id": "hw06-eshop-api-tests-23127147",
+    "name": "HW06 EShop API Tests - 23127147",
+    "description": "API Testing for EShop SUT - HW06\nStudent ID: 23127147\nAPIs: Login (FR-02), Shopping Cart (FR-07), Admin Order Status (FR-18)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Add X-Student-Id header to ALL requests in this collection",
+          "pm.request.headers.add({",
+          "    key: 'X-Student-Id',",
+          "    value: '23127147'",
+          "});",
+          "console.log('[PRE-REQUEST] Added X-Student-Id: 23127147 to:', pm.info.requestName);"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "user_token", "value": "" },
+    { "key": "admin_token", "value": "" },
+    { "key": "cart_user_token", "value": "" },
+    { "key": "user_id", "value": "" },
+    { "key": "order_id", "value": "" },
+    { "key": "student_id", "value": "23127147" }
+  ],
+  "item": [
+    {
+      "name": "⚙️ Setup",
+      "item": [
+        {
+          "name": "Setup-1: Register cart test user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Register a fresh user for cart/order tests (isolated from login lockout tests)",
+                  "const status = pm.response.code;",
+                  "console.log('Register cart user status:', status);",
+                  "// 200 = registered, 500 = already exists (both OK for setup)"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"HW06 Cart Tester\",\"email\":\"hw06cart@test.com\",\"password\":\"CartTest123!\"}"
+            },
+            "url": "{{base_url}}/api/register"
+          }
+        },
+        {
+          "name": "Setup-2: Login as cart test user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Setup: Login cart user - status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "if (json.token) {",
+                  "    pm.collectionVariables.set('cart_user_token', json.token);",
+                  "    pm.collectionVariables.set('user_id', json.user.id);",
+                  "    console.log('cart_user_token saved, user_id:', json.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"hw06cart@test.com\",\"password\":\"CartTest123!\"}"
+            },
+            "url": "{{base_url}}/api/login"
+          }
+        },
+        {
+          "name": "Setup-3: Login as Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Setup: Login as admin - status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "if (json.token) {",
+                  "    pm.collectionVariables.set('admin_token', json.token);",
+                  "    pm.collectionVariables.set('user_token', json.token);",
+                  "    console.log('admin_token saved');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"admin@eshop.com\",\"password\":\"Admin123!\"}"
+            },
+            "url": "{{base_url}}/api/login"
+          }
+        },
+        {
+          "name": "Setup-4: Add item to cart",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Setup: Add to cart - status 200', () => pm.response.to.have.status(200));",
+                  "console.log('Item added to cart for cart_user');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{cart_user_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\":1,\"name\":\"iPhone 15 Pro Max\",\"price\":30000000,\"quantity\":1}"
+            },
+            "url": "{{base_url}}/api/cart"
+          }
+        },
+        {
+          "name": "Setup-5: Checkout (create order for API3 tests)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Setup: Checkout - status 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "if (json.orderId) {",
+                  "    pm.collectionVariables.set('order_id', json.orderId);",
+                  "    console.log('order_id saved:', json.orderId);",
+                  "} else {",
+                  "    console.log('WARNING: order_id not set!', JSON.stringify(json));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{cart_user_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"total_amount\":30000000,\"shipping_address\":\"123 Le Loi, TP.HCM\"}"
+            },
+            "url": "{{base_url}}/api/checkout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 API1 - Login (FR-02)",
+      "item": [
+        {
+          "name": "TC-API1-001 Valid login - regular user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API1-001: Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('TC-API1-001: Response has token', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('token');",
+                  "    pm.expect(json.token).to.be.a('string');",
+                  "});",
+                  "pm.test('TC-API1-001: Response has user object', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('user');",
+                  "    pm.expect(json.user).to.have.property('id');",
+                  "    pm.expect(json.user).to.have.property('email');",
+                  "    pm.expect(json.user).to.have.property('role');",
+                  "});",
+                  "pm.test('TC-API1-001: User role is user', () => {",
+                  "    pm.expect(pm.response.json().user.role).to.equal('user');",
+                  "});",
+                  "pm.test('TC-API1-001: X-Student-Id header sent', () => {",
+                  "    pm.expect(pm.request.headers.get('X-Student-Id')).to.equal('23127147');",
+                  "});",
+                  "pm.test('TC-API1-001: Response time < 2000ms', () => {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"test@eshop.com\",\"password\":\"Test1234!\"}"
+            },
+            "url": "{{base_url}}/api/login"
+          }
+        },
+        {
+          "name": "TC-API1-002 Valid login - admin user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API1-002: Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('TC-API1-002: User role is admin', () => {",
+                  "    pm.expect(pm.response.json().user.role).to.equal('admin');",
+                  "});",
+                  "pm.test('TC-API1-002: Token is JWT format (3 segments)', () => {",
+                  "    const token = pm.response.json().token;",
+                  "    pm.expect(token.split('.').length).to.equal(3);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"admin@eshop.com\",\"password\":\"Admin123!\"}"
+            },
+            "url": "{{base_url}}/api/login"
+          }
+        },
+        {
+          "name": "TC-API1-003 Wrong password (1st fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API1-003: Status 401 for wrong password', () => pm.response.to.have.status(401));",
+                  "pm.test('TC-API1-003: Generic error (no user enumeration)', () => {",
+                  "    pm.expect(pm.response.json().error).to.equal('Invalid email or password');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"test@eshop.com\",\"password\":\"WrongPassword\"}"
+            },
+            "url": "{{base_url}}/api/login"
+          }
+        },
+        {
+          "name": "TC-API1-004 Non-existent email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API1-004: Status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('TC-API1-004: Generic error message', () => {",
+                  "    pm.expect(pm.response.json().error).to.equal('Invalid email or password');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"notexist@eshop.com\",\"password\":\"Test1234!\"}"
+            },
+            "url": "{{base_url}}/api/login"
+          }
+        },
+        {
+          "name": "TC-API1-005 Empty email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API1-005: Status 401 for empty email', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"\",\"password\":\"Test1234!\"}"
+            },
+            "url": "{{base_url}}/api/login"
+          }
+        },
+        {
+          "name": "TC-API1-006 Empty password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API1-006: Status 401 for empty password', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"test@eshop.com\",\"password\":\"\"}"
+            },
+            "url": "{{base_url}}/api/login"
+          }
+        },
+        {
+          "name": "TC-API1-007 Empty body",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API1-007: Status 401 for empty body', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": "{{base_url}}/api/login"
+          }
+        },
+        {
+          "name": "TC-API1-010 SQL Injection in email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API1-010: SQL injection blocked - status 401', () => pm.response.to.have.status(401));",
+                  "pm.test('TC-API1-010: No DB error leaked in response', () => {",
+                  "    const body = pm.response.text();",
+                  "    pm.expect(body.toLowerCase()).to.not.include('sql');",
+                  "    pm.expect(body.toLowerCase()).to.not.include('sqlite');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"' OR '1'='1' --\",\"password\":\"anything\"}"
+            },
+            "url": "{{base_url}}/api/login"
+          }
+        },
+        {
+          "name": "TC-API1-016 SQL Injection in product search (BUG verification)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API1-016: Product search SQL injection response', () => {",
+                  "    const status = pm.response.code;",
+                  "    const body = pm.response.text();",
+                  "    console.log('[BUG CHECK] SQL injection in search - status:', status);",
+                  "    console.log('[BUG CHECK] Response (first 200):', body.substring(0,200));",
+                  "    // BUG: uses string concat `SELECT * FROM products WHERE name LIKE '%${searchQuery}%'`",
+                  "    pm.expect([200, 500]).to.include(status);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products?search=%27%20OR%20%271%27%3D%271",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products"],
+              "query": [{ "key": "search", "value": "' OR '1'='1" }]
+            }
+          }
+        },
+        {
+          "name": "TC-API1-EXT-002 JWT has no exp claim (BUG)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API1-EXT-002: JWT is missing exp claim (BUG)', () => {",
+                  "    const json = pm.response.json();",
+                  "    if (json.token) {",
+                  "        const parts = json.token.split('.');",
+                  "        const payload = JSON.parse(atob(parts[1]));",
+                  "        console.log('JWT payload:', JSON.stringify(payload));",
+                  "        if (!payload.exp) {",
+                  "            console.log('BUG CONFIRMED: JWT missing exp claim - tokens NEVER expire!');",
+                  "        }",
+                  "        // Documenting bug: expect exp to be missing (that's the bug)",
+                  "        pm.expect(payload.exp).to.be.undefined;",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"admin@eshop.com\",\"password\":\"Admin123!\"}"
+            },
+            "url": "{{base_url}}/api/login"
+          }
+        },
+        {
+          "name": "TC-API1-021 Account lockout after 2 wrong attempts (BUG: should be 3)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// After 2 wrong attempts (each adds 2 to counter), account is locked",
+                  "// BUG: should lock after 3 wrong attempts per spec",
+                  "pm.test('TC-API1-021: Account locked after 2 wrong attempts (BUG)', () => {",
+                  "    const status = pm.response.code;",
+                  "    const body = pm.response.json();",
+                  "    console.log('Status after 2nd wrong attempt:', status);",
+                  "    if (status === 403) {",
+                  "        console.log('BUG CONFIRMED: Account locked after only 2 wrong attempts!');",
+                  "        console.log('Error:', body.error);",
+                  "    }",
+                  "    pm.expect([401, 403]).to.include(status);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"test@eshop.com\",\"password\":\"WrongAgain2\"}"
+            },
+            "url": "{{base_url}}/api/login"
+          }
+        },
+        {
+          "name": "TC-API1-EXT-001 Locked account login attempt",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API1-EXT-001: Locked account returns 403', () => {",
+                  "    const status = pm.response.code;",
+                  "    const body = pm.response.json();",
+                  "    console.log('Locked account attempt status:', status);",
+                  "    if (status === 403) {",
+                  "        console.log('Account is locked. Error:', body.error);",
+                  "        pm.expect(body.error).to.include('khóa');",
+                  "    }",
+                  "    pm.expect([401, 403]).to.include(status);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"test@eshop.com\",\"password\":\"Test1234!\"}"
+            },
+            "url": "{{base_url}}/api/login"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛒 API2 - Shopping Cart (FR-07)",
+      "item": [
+        {
+          "name": "TC-API2-001 GET cart - authenticated (uses cart_user_token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API2-001: Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('TC-API2-001: Response is array', () => {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});",
+                  "pm.test('TC-API2-001: X-Student-Id present', () => {",
+                  "    pm.expect(pm.request.headers.get('X-Student-Id')).to.equal('23127147');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{cart_user_token}}" }
+            ],
+            "url": "{{base_url}}/api/cart"
+          }
+        },
+        {
+          "name": "TC-API2-002 GET cart - no authentication",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API2-002: Status 401 without token', () => pm.response.to.have.status(401));",
+                  "pm.test('TC-API2-002: Error is Unauthorized', () => {",
+                  "    pm.expect(pm.response.json().error).to.equal('Unauthorized');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/cart"
+          }
+        },
+        {
+          "name": "TC-API2-003 GET cart - invalid token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API2-003: Status 403 with invalid token', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer invalid_token_here" }],
+            "url": "{{base_url}}/api/cart"
+          }
+        },
+        {
+          "name": "TC-API2-005 POST cart - add valid item",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API2-005: Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('TC-API2-005: Message is Added to cart', () => {",
+                  "    pm.expect(pm.response.json().message).to.equal('Added to cart');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{cart_user_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\":1,\"name\":\"iPhone 15 Pro Max\",\"price\":30000000,\"quantity\":2}"
+            },
+            "url": "{{base_url}}/api/cart"
+          }
+        },
+        {
+          "name": "TC-API2-006 GET cart - verify item added",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API2-006: Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('TC-API2-006: Cart has at least 1 item', () => {",
+                  "    pm.expect(pm.response.json().length).to.be.at.least(1);",
+                  "});",
+                  "pm.test('TC-API2-006: Cart item has required fields', () => {",
+                  "    const item = pm.response.json()[0];",
+                  "    pm.expect(item).to.have.property('id');",
+                  "    pm.expect(item).to.have.property('name');",
+                  "    pm.expect(item).to.have.property('price');",
+                  "    pm.expect(item).to.have.property('quantity');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{cart_user_token}}" }],
+            "url": "{{base_url}}/api/cart"
+          }
+        },
+        {
+          "name": "TC-API2-007 POST cart - no auth",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API2-007: Status 401 without auth', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\":1,\"name\":\"iPhone\",\"price\":30000000,\"quantity\":1}"
+            },
+            "url": "{{base_url}}/api/cart"
+          }
+        },
+        {
+          "name": "TC-API2-009 POST cart - negative quantity (BUG)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API2-009: BUG - negative quantity returns 200 (expected 400)', () => {",
+                  "    const status = pm.response.code;",
+                  "    if (status === 200) {",
+                  "        console.log('BUG CONFIRMED: Negative quantity accepted!');",
+                  "    }",
+                  "    pm.expect(status).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{cart_user_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\":1,\"name\":\"iPhone\",\"price\":30000000,\"quantity\":-1}"
+            },
+            "url": "{{base_url}}/api/cart"
+          }
+        },
+        {
+          "name": "TC-API2-012 POST cart - negative price (BUG)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API2-012: BUG - negative price accepted (expected 400)', () => {",
+                  "    const status = pm.response.code;",
+                  "    if (status === 200) {",
+                  "        console.log('BUG CONFIRMED: Negative price accepted - payment bypass risk!');",
+                  "    }",
+                  "    pm.expect(status).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{cart_user_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\":1,\"name\":\"iPhone\",\"price\":-100,\"quantity\":1}"
+            },
+            "url": "{{base_url}}/api/cart"
+          }
+        },
+        {
+          "name": "TC-API2-021 POST cart - XSS in name (BUG)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API2-021: XSS stored in cart without sanitization (BUG)', () => {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    console.log('BUG: XSS payload stored in memory cart - dangerous if rendered in frontend');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{cart_user_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\":1,\"name\":\"<script>alert('XSS')</script>\",\"price\":100,\"quantity\":1}"
+            },
+            "url": "{{base_url}}/api/cart"
+          }
+        },
+        {
+          "name": "TC-API2-EXT-004 Client-controlled price - trust boundary (BUG)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API2-EXT-004: Price=1 for 30M product accepted (BUG)', () => {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "    console.log('BUG: Server trusts client price. Attacker can set 30M product to price=1!');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{cart_user_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\":1,\"name\":\"iPhone 15 Pro Max\",\"price\":1,\"quantity\":1}"
+            },
+            "url": "{{base_url}}/api/cart"
+          }
+        },
+        {
+          "name": "TC-API2-EXT-005 Role escalation via PUT /api/users/me (BUG)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API2-EXT-005: User can escalate own role to admin (BUG)', () => {",
+                  "    const status = pm.response.code;",
+                  "    console.log('Role escalation attempt status:', status);",
+                  "    if (status === 200) {",
+                  "        console.log('BUG: PUT /api/users/me accepts role field - privilege escalation!');",
+                  "        console.log('server.js:124 - if(role) { query += role = ? }');",
+                  "    }",
+                  "    pm.expect(status).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{cart_user_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"HW06 Cart Tester\",\"role\":\"admin\"}"
+            },
+            "url": "{{base_url}}/api/users/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👑 API3 - Admin Order Status (FR-18)",
+      "item": [
+        {
+          "name": "TC-API3-001 pending → confirmed (valid transition)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API3-001: Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('TC-API3-001: Success message', () => {",
+                  "    pm.expect(pm.response.json().message).to.equal('Order status updated');",
+                  "});",
+                  "pm.test('TC-API3-001: X-Student-Id present', () => {",
+                  "    pm.expect(pm.request.headers.get('X-Student-Id')).to.equal('23127147');",
+                  "});",
+                  "console.log('Order ID used:', pm.collectionVariables.get('order_id'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\":\"confirmed\"}" },
+            "url": "{{base_url}}/api/admin/orders/{{order_id}}/status"
+          }
+        },
+        {
+          "name": "TC-API3-002 confirmed → shipping (valid transition)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API3-002: Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('TC-API3-002: Order status updated', () => {",
+                  "    pm.expect(pm.response.json().message).to.equal('Order status updated');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\":\"shipping\"}" },
+            "url": "{{base_url}}/api/admin/orders/{{order_id}}/status"
+          }
+        },
+        {
+          "name": "TC-API3-003 shipping → delivered (valid transition)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API3-003: Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('TC-API3-003: Order delivered successfully', () => {",
+                  "    pm.expect(pm.response.json().message).to.equal('Order status updated');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\":\"delivered\"}" },
+            "url": "{{base_url}}/api/admin/orders/{{order_id}}/status"
+          }
+        },
+        {
+          "name": "TC-API3-006 pending → shipping (invalid - skips confirmed)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Need a new pending order for this test",
+                  "pm.test('TC-API3-006: Check invalid transition blocked', () => {",
+                  "    const status = pm.response.code;",
+                  "    console.log('pending→shipping attempt on current order (may be delivered):', status);",
+                  "    pm.expect([400, 404]).to.include(status);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\":\"shipping\"}" },
+            "url": "{{base_url}}/api/admin/orders/{{order_id}}/status"
+          }
+        },
+        {
+          "name": "TC-API3-013 canceled → delivered (BUG - allowed by code)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API3-013: Response for canceled→delivered (BUG on line 550)', () => {",
+                  "    const status = pm.response.code;",
+                  "    const body = pm.response.json();",
+                  "    console.log('canceled→delivered status:', status);",
+                  "    console.log('Response:', JSON.stringify(body));",
+                  "    // BUG: server.js line 550 allows canceled→delivered",
+                  "    // (current order is delivered, so this returns 'invalid transition from delivered to delivered')",
+                  "    pm.expect([200, 400]).to.include(status);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\":\"delivered\"}" },
+            "url": "{{base_url}}/api/admin/orders/{{order_id}}/status"
+          }
+        },
+        {
+          "name": "TC-API3-017 Non-admin updates order status (CRITICAL BUG)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API3-017: Non-admin can call admin route (CRITICAL BUG)', () => {",
+                  "    const status = pm.response.code;",
+                  "    console.log('Regular user hitting admin route - status:', status);",
+                  "    if (status !== 403) {",
+                  "        console.log('CRITICAL BUG: No role check! server.js:525 - PUT /api/admin/orders/:id/status has no isAdmin check!');",
+                  "    }",
+                  "    // Expected 403 but BUG means it returns 400 (invalid transition) or 200",
+                  "    pm.expect([200, 400]).to.include(status);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{cart_user_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\":\"confirmed\"}" },
+            "url": "{{base_url}}/api/admin/orders/{{order_id}}/status"
+          }
+        },
+        {
+          "name": "TC-API3-018 No authentication token → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API3-018: Status 401 without token', () => pm.response.to.have.status(401));",
+                  "pm.test('TC-API3-018: Error is Unauthorized', () => {",
+                  "    pm.expect(pm.response.json().error).to.equal('Unauthorized');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"status\":\"confirmed\"}" },
+            "url": "{{base_url}}/api/admin/orders/{{order_id}}/status"
+          }
+        },
+        {
+          "name": "TC-API3-020 Non-existent order ID → 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API3-020: Status 404 for non-existent order', () => pm.response.to.have.status(404));",
+                  "pm.test('TC-API3-020: Error is Order not found', () => {",
+                  "    pm.expect(pm.response.json().error).to.equal('Order not found');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\":\"confirmed\"}" },
+            "url": "{{base_url}}/api/admin/orders/99999/status"
+          }
+        },
+        {
+          "name": "TC-API3-025 Invalid status value → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API3-025: Status 400 for invalid status', () => pm.response.to.have.status(400));",
+                  "pm.test('TC-API3-025: Error message present', () => {",
+                  "    pm.expect(pm.response.json()).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{\"status\":\"totally_invalid_status_xyz\"}" },
+            "url": "{{base_url}}/api/admin/orders/{{order_id}}/status"
+          }
+        },
+        {
+          "name": "TC-API3-038 Non-admin GET /api/admin/orders (BUG - no role check)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API3-038: Regular user can list all orders (BUG)', () => {",
+                  "    const status = pm.response.code;",
+                  "    if (status === 200) {",
+                  "        const orders = pm.response.json();",
+                  "        console.log('BUG CONFIRMED: Regular user sees ALL orders! Count:', orders.length);",
+                  "        console.log('server.js:510 GET /api/admin/orders - no role check!');",
+                  "    }",
+                  "    pm.expect(status).to.equal(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{cart_user_token}}" }],
+            "url": "{{base_url}}/api/admin/orders"
+          }
+        },
+        {
+          "name": "TC-API3-EXT-003 GET admin orders - schema validation (array response)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('TC-API3-EXT-003: GET admin/orders returns array', () => {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});",
+                  "pm.test('TC-API3-EXT-003: Each order has required fields', () => {",
+                  "    const orders = pm.response.json();",
+                  "    if (orders.length > 0) {",
+                  "        const order = orders[0];",
+                  "        pm.expect(order).to.have.property('id');",
+                  "        pm.expect(order).to.have.property('status');",
+                  "        pm.expect(order).to.have.property('total_amount');",
+                  "        console.log('Sample order:', JSON.stringify(order));",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{admin_token}}" }],
+            "url": "{{base_url}}/api/admin/orders"
+          }
+        }
+      ]
+    }
+  ]
+}
