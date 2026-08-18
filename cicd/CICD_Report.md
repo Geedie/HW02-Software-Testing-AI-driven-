@@ -35,7 +35,8 @@ Theo yêu cầu HW06, pipeline chứng minh 2 lần chạy thực tế trên Git
 - **Mô tả:** Chạy toàn bộ 39 API requests với 62 assertions thành công. Các bug phát hiện được log dưới dạng `console.log()` mà không làm sập assertion.
 - **Link kết quả GitHub Actions Run 1:** [GitHub Actions Run 1 (PASSED)](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/actions/runs/32113355491)
 - **Hình ảnh chứng minh:**  
-  *(Vui lòng đính kèm Ảnh 1: Các step tick xanh & Ảnh 2: Khung Artifacts đã chụp ở trang Run 1)*
+  ![Ảnh 1: Các bước tick xanh](./image/Anh1.png)  
+  ![Ảnh 2: Khung Artifacts](./image/Anh2.png)  
 
 ---
 
@@ -47,7 +48,7 @@ Theo yêu cầu HW06, pipeline chứng minh 2 lần chạy thực tế trên Git
 - **Kết quả kỳ vọng:** Newman phát hiện 1 assertion failed ➜ trả về exit code 1 ➜ GitHub Actions đánh dấu workflow thất bại (Red).
 - **Link kết quả GitHub Actions Run 2:** [GitHub Actions Run 2 (FAILED)](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/actions/runs/32114672899)
 - **Hình ảnh chứng minh:**  
-  *(Vui lòng đính kèm Ảnh 3: Bảng điều khiển GitHub Actions báo màu đỏ FAILED)*
+  ![Ảnh 3: Run 2 FAILED](./image/Anh3.png)  
 
 ---
 
