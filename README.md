@@ -286,3 +286,59 @@ Tại bước Checkout, người dùng có thể nhập mã giảm giá. Hệ th
 ---
 
 _Tài liệu này phục vụ cho mục đích học tập và thực hành Kiểm thử Phần mềm. Phiên bản: 2.0 — Cập nhật: 2026-05-14._
+
+---
+
+## HW06 — API Testing Submission
+
+### Student ID: 23127147
+### GitHub Repository: [https://github.com/Geedie/HW02-Software-Testing-AI-driven-](https://github.com/Geedie/HW02-Software-Testing-AI-driven-)
+### Branch: `HW06-API-Testing-Xuan`
+
+### Self-Assessment Table
+
+| No. | Criteria | Self-Assessed Grade |
+|-----|----------|-------------------|
+| 1 | API 1 — full pipeline (POST /api/login): generate + audit + extend + execute + bugs | 30 |
+| 2 | API 2 — full pipeline (POST/GET /api/cart): generate + audit + extend + execute + bugs | 28 |
+| 3 | API 3 — full pipeline (PUT /api/admin/orders/:id/status): generate + audit + extend + execute + bugs | 30 |
+| 4 | Agent Skills (AI-driven test generator): diagram + pseudocode | 9 |
+| **Total** | | **97** |
+
+### Test Summary Report
+
+| Metric | Value |
+|--------|-------|
+| Number of APIs tested | 3 |
+| Test cases generated (AI) | 116 |
+| Test cases added (human extended) | 15 |
+| Total test cases | 131 |
+| Test cases executed (Newman) | 35 |
+| Assertions passed | 57 |
+| Assertions failed | 1 (side-effect from account lockout) |
+| Bugs found | 14 (3 Critical, 6 High, 4 Medium, 1 Low) |
+
+### APIs Tested
+
+| API | Pool | Endpoint | Feature |
+|-----|------|---------|---------|
+| Login | Pool A | `POST /api/login` | FR-02 |
+| Shopping Cart | Pool B | `POST/GET /api/cart` | FR-07 |
+| Admin Order Status | Pool C | `PUT /api/admin/orders/:id/status` | FR-18 |
+
+### Key Files
+
+| File | Description |
+|------|-------------|
+| `23127147_HW06_Report.md` | Main report (full pipeline documentation) |
+| `test_cases/API1_Login_test_cases.md` | 40 test cases for Login API |
+| `test_cases/API2_Cart_test_cases.md` | 38 test cases for Cart API |
+| `test_cases/API3_AdminOrderStatus_test_cases.md` | 38 test cases for Admin Order Status API |
+| `postman/HW06_EShop_API_Tests.postman_collection.json` | Postman collection (35 requests) |
+| `postman/HW06_Environment.postman_environment.json` | Postman environment |
+| `postman/test_data.json` | Data file for Collection Runner |
+| `newman/newman-report.html` | Newman HTML execution report |
+| `AI_Audit_Report_HW06.md` | AI Audit Report (mandatory) |
+| `AI_Critique_HW06.md` | AI Critique (200-300 words) |
+| `agent_skill/AI_Test_Generator_Design.md` | Agent Skill: diagram + pseudocode |
+| `.github/workflows/api-tests.yml` | CI/CD pipeline (GitHub Actions) |
