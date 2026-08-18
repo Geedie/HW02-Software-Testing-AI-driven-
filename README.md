@@ -313,10 +313,10 @@ _Tài liệu này phục vụ cho mục đích học tập và thực hành Ki�
 | Test cases generated (AI) | 116 |
 | Test cases added (human extended) | 15 |
 | Total test cases | 131 |
-| Test cases executed (Newman) | 35 |
-| Assertions passed | 57 |
-| Assertions failed | 1 (side-effect from account lockout) |
-| Bugs found | 14 (3 Critical, 6 High, 4 Medium, 1 Low) |
+| Test cases executed (Newman) | 39 |
+| Assertions passed | 53 |
+| Assertions failed (Bugs highlighted) | 9 |
+| Total Bugs found | 14 (3 Critical, 6 High, 4 Medium, 1 Low) |
 
 ### APIs Tested
 
@@ -331,14 +331,17 @@ _Tài liệu này phục vụ cho mục đích học tập và thực hành Ki�
 | File | Description |
 |------|-------------|
 | `23127147_HW06_Report.md` | Main report (full pipeline documentation) |
+| `bug_report/Bug_Report_HW06.md` | **Dedicated Bug Report (14 Bugs detailed)** |
+| `test_cases/HW06_Test_Cases.xlsx` | Excel test suite with formatted color-coded tabs |
 | `test_cases/API1_Login_test_cases.md` | 40 test cases for Login API |
 | `test_cases/API2_Cart_test_cases.md` | 38 test cases for Cart API |
 | `test_cases/API3_AdminOrderStatus_test_cases.md` | 38 test cases for Admin Order Status API |
-| `postman/HW06_EShop_API_Tests.postman_collection.json` | Postman collection (35 requests) |
+| `postman/HW06_EShop_API_Tests.postman_collection.json` | Postman collection (39 requests) |
 | `postman/HW06_Environment.postman_environment.json` | Postman environment |
 | `postman/test_data.json` | Data file for Collection Runner |
-| `newman/newman-report.html` | Newman HTML execution report |
+| `newman/newman-report.html` | Newman HTML execution report (with `Failed (9)` tab) |
 | `AI_Audit_Report_HW06.md` | AI Audit Report (mandatory) |
 | `AI_Critique_HW06.md` | AI Critique (200-300 words) |
 | `agent_skill/AI_Test_Generator_Design.md` | Agent Skill: diagram + pseudocode |
+| `cicd/CICD_Report.md` | CI/CD report with live workflow run proof links |
 | `.github/workflows/api-tests.yml` | CI/CD pipeline (GitHub Actions) |
