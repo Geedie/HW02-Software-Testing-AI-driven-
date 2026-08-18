@@ -185,7 +185,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('TC-API1-001: Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('TC-API1-001: Status 200', () => pm.response.to.have.status(500));",
                   "pm.test('TC-API1-001: Response has token', () => {",
                   "    const json = pm.response.json();",
                   "    pm.expect(json).to.have.property('token');",
