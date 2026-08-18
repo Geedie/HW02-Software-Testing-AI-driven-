@@ -432,17 +432,13 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('TC-API1-EXT-002: JWT is missing exp claim (BUG)', () => {",
+                  "pm.test('TC-API1-EXT-002: JWT must contain exp expiration claim', () => {",
                   "    const json = pm.response.json();",
                   "    if (json.token) {",
                   "        const parts = json.token.split('.');",
                   "        const payload = JSON.parse(atob(parts[1]));",
                   "        console.log('JWT payload:', JSON.stringify(payload));",
-                  "        if (!payload.exp) {",
-                  "            console.log('BUG CONFIRMED: JWT missing exp claim - tokens NEVER expire!');",
-                  "        }",
-                  "        // Documenting bug: expect exp to be missing (that's the bug)",
-                  "        pm.expect(payload.exp).to.be.undefined;",
+                  "        pm.expect(payload).to.have.property('exp');",
                   "    }",
                   "});"
                 ]
@@ -468,15 +464,9 @@
                 "exec": [
                   "// After 2 wrong attempts (each adds 2 to counter), account is locked",
                   "// BUG: should lock after 3 wrong attempts per spec",
-                  "pm.test('TC-API1-021: Account locked after 2 wrong attempts (BUG)', () => {",
+                  "pm.test('TC-API1-021: Account should NOT lock on 2nd wrong attempt (expect 401)', () => {",
                   "    const status = pm.response.code;",
-                  "    const body = pm.response.json();",
-                  "    console.log('Status after 2nd wrong attempt:', status);",
-                  "    if (status === 403) {",
-                  "        console.log('BUG CONFIRMED: Account locked after only 2 wrong attempts!');",
-                  "        console.log('Error:', body.error);",
-                  "    }",
-                  "    pm.expect([401, 403]).to.include(status);",
+                  "    pm.expect(status).to.equal(401);",
                   "});"
                 ]
               }
@@ -678,12 +668,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('TC-API2-009: BUG - negative quantity returns 200 (expected 400)', () => {",
-                  "    const status = pm.response.code;",
-                  "    if (status === 200) {",
-                  "        console.log('BUG CONFIRMED: Negative quantity accepted!');",
-                  "    }",
-                  "    pm.expect(status).to.equal(200);",
+                  "pm.test('TC-API2-009: Negative quantity must be rejected with 400 Bad Request', () => {",
+                  "    pm.response.to.have.status(400);",
                   "});"
                 ]
               }
@@ -709,12 +695,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('TC-API2-012: BUG - negative price accepted (expected 400)', () => {",
-                  "    const status = pm.response.code;",
-                  "    if (status === 200) {",
-                  "        console.log('BUG CONFIRMED: Negative price accepted - payment bypass risk!');",
-                  "    }",
-                  "    pm.expect(status).to.equal(200);",
+                  "pm.test('TC-API2-012: Negative price must be rejected with 400 Bad Request', () => {",
+                  "    pm.response.to.have.status(400);",
                   "});"
                 ]
               }
@@ -740,9 +722,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('TC-API2-021: XSS stored in cart without sanitization (BUG)', () => {",
-                  "    pm.expect(pm.response.code).to.equal(200);",
-                  "    console.log('BUG: XSS payload stored in memory cart - dangerous if rendered in frontend');",
+                  "pm.test('TC-API2-021: XSS payload must be rejected or sanitized (expect 400)', () => {",
+                  "    pm.response.to.have.status(400);",
                   "});"
                 ]
               }
@@ -768,9 +749,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('TC-API2-EXT-004: Price=1 for 30M product accepted (BUG)', () => {",
-                  "    pm.expect(pm.response.code).to.equal(200);",
-                  "    console.log('BUG: Server trusts client price. Attacker can set 30M product to price=1!');",
+                  "pm.test('TC-API2-EXT-004: Client modified price must be rejected with 400', () => {",
+                  "    pm.response.to.have.status(400);",
                   "});"
                 ]
               }
@@ -796,14 +776,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('TC-API2-EXT-005: User can escalate own role to admin (BUG)', () => {",
-                  "    const status = pm.response.code;",
-                  "    console.log('Role escalation attempt status:', status);",
-                  "    if (status === 200) {",
-                  "        console.log('BUG: PUT /api/users/me accepts role field - privilege escalation!');",
-                  "        console.log('server.js:124 - if(role) { query += role = ? }');",
-                  "    }",
-                  "    pm.expect(status).to.equal(200);",
+                  "pm.test('TC-API2-EXT-005: Role escalation via PUT /api/users/me must be forbidden', () => {",
+                  "    pm.response.to.have.status(400);",
                   "});"
                 ]
               }
@@ -970,14 +944,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('TC-API3-017: Non-admin can call admin route (CRITICAL BUG)', () => {",
-                  "    const status = pm.response.code;",
-                  "    console.log('Regular user hitting admin route - status:', status);",
-                  "    if (status !== 403) {",
-                  "        console.log('CRITICAL BUG: No role check! server.js:525 - PUT /api/admin/orders/:id/status has no isAdmin check!');",
-                  "    }",
-                  "    // Expected 403 but BUG means it returns 400 (invalid transition) or 200",
-                  "    pm.expect([200, 400]).to.include(status);",
+                  "pm.test('TC-API3-017: Non-admin calling admin order status route must be forbidden (403)', () => {",
+                  "    pm.response.to.have.status(403);",
                   "});"
                 ]
               }
@@ -1072,14 +1040,8 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('TC-API3-038: Regular user can list all orders (BUG)', () => {",
-                  "    const status = pm.response.code;",
-                  "    if (status === 200) {",
-                  "        const orders = pm.response.json();",
-                  "        console.log('BUG CONFIRMED: Regular user sees ALL orders! Count:', orders.length);",
-                  "        console.log('server.js:510 GET /api/admin/orders - no role check!');",
-                  "    }",
-                  "    pm.expect(status).to.equal(200);",
+                  "pm.test('TC-API3-038: Non-admin GET /api/admin/orders must be forbidden (403)', () => {",
+                  "    pm.response.to.have.status(403);",
                   "});"
                 ]
               }
