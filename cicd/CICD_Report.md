@@ -29,20 +29,21 @@ Hệ thống CI/CD được thiết lập tự động hóa bằng **GitHub Acti
 Theo yêu cầu HW06, pipeline cần chứng minh 2 lần chạy (2 commits):
 
 ### 🟢 Run 1: All Tests Passing (Tất cả Test Cases thành công)
-- **Git Commit SHA / Link:** `[Dán link commit hoặc SHA vào đây - Ví dụ: a1b2c3d]`
+- **Git Commit SHA:** `4d80c6fcc4071b52591b6daf1f9ae9d763e90b1e`
+- **Commit Link:** [Commit 4d80c6f](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/commit/4d80c6fcc4071b52591b6daf1f9ae9d763e90b1e)
 - **Trạng thái:** ✅ PASSED (Build Success)
 - **Mô tả:** Chạy toàn bộ 39 API requests với 62 assertions thành công 100%. Các bug được ghi nhận dưới dạng `console.log()` thay vì làm sập assertion.
-- **Link kết quả GitHub Actions:** `[Dán link GitHub Actions Run vào đây]`
-- **Hình ảnh minh họa:**
-  *(Dán screenshot bảng điều khiển GitHub Actions xanh - All checks passed)*
+- **Link kết quả GitHub Actions Run 1:** [GitHub Actions Run 1 (PASSED)](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/actions/runs/32113355491)
 
 ---
 
 ## 🔴 Run 2: Failing Test Case (Có Test Case thất bại)
-- **Git Commit SHA / Link:** `[Dán link commit hoặc SHA vào đây - Ví dụ: e5f6g7h]`
+- **Git Commit SHA:** `273971ec8e3984dcd7650f09806c9a35a4099411`
+- **Commit Link:** [Commit 273971e](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/commit/273971ec8e3984dcd7650f09806c9a35a4099411)
 - **Trạng thái:** ❌ FAILED (Build Failed)
-- **Mô tả:** Thực hiện commit thay đổi 1 assertion trong Postman Collection (ví dụ: yêu cầu `POST /api/login` trả về Status 500 thay vì 200).
+- **Mô tả:** Cố tình thay đổi 1 assertion trong Postman Collection (`TC-API1-001` yêu cầu Status `500` thay vì `200`).
 - **Kết quả kỳ vọng:** Newman phát hiện 1 assertion failed → trả về exit code 1 → GitHub Actions đánh dấu workflow thất bại.
+- **Link kết quả GitHub Actions Run 2:** [GitHub Actions Run 2 (FAILED)](https://github.com/Geedie/HW02-Software-Testing-AI-driven-/actions/runs/32113941544)
 - **Link kết quả GitHub Actions:** `[Dán link GitHub Actions Run vào đây]`
 - **Hình ảnh minh họa:**
   *(Dán screenshot bảng điều khiển GitHub Actions đỏ - Pipeline failed)*
